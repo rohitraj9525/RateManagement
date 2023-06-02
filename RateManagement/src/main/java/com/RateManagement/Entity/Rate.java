@@ -1,4 +1,5 @@
 package com.RateManagement.Entity;
+import java.time.LocalDate;
 import java.util.Date;
 
 import jakarta.persistence.CascadeType;
@@ -19,21 +20,21 @@ public class Rate
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
-	private Date stayDateFrom;
+	private LocalDate stayDateFrom;
 	private int nights;
 	private double value;
-	private Date stayDateTo;
-	private Date closeDate;
+	private LocalDate stayDateTo;
+	private LocalDate closeDate;
 	public Long getId() {
 		return id;
 	}
 	public void setId(Long id) {
 		this.id = id;
 	}
-	public Date getStayDateFrom() {
+	public LocalDate getStayDateFrom() {
 		return stayDateFrom;
 	}
-	public void setStayDateFrom(Date stayDateFrom) {
+	public void setStayDateFrom(LocalDate stayDateFrom) {
 		this.stayDateFrom = stayDateFrom;
 	}
 	public int getNights() {
@@ -48,26 +49,26 @@ public class Rate
 	public void setValue(double value) {
 		this.value = value;
 	}
-	public Date getStayDateTo() {
+	public LocalDate getStayDateTo() {
 		return stayDateTo;
 	}
-	public void setStayDateTo(Date stayDateTo) {
+	public void setStayDateTo(LocalDate stayDateTo) {
 		this.stayDateTo = stayDateTo;
 	}
-	public Date getCloseDate() {
+	public LocalDate getCloseDate() {
 		return closeDate;
 	}
-	public void setCloseDate(Date closeDate) {
+	public void setCloseDate(LocalDate closeDate) {
 		this.closeDate = closeDate;
 	}
-	public Rate(Long id, Date stayDateFrom, int nights, double value, Date stayDateTo, Date closeDate) {
+	public Rate( LocalDate stayDateFrom, int nights, double value, LocalDate stayDateTo, LocalDate closeDate, Bungalow bungalow) {
 		super();
-		this.id = id;
 		this.stayDateFrom = stayDateFrom;
 		this.nights = nights;
 		this.value = value;
 		this.stayDateTo = stayDateTo;
 		this.closeDate = closeDate;
+		this.mybungalow=bungalow;
 	}
 	public Rate() {
 		super();
@@ -76,4 +77,12 @@ public class Rate
 	@ManyToOne(fetch=FetchType.LAZY,cascade={CascadeType.ALL})
 	@JoinColumn(name="bungalow_id")
 	private Bungalow mybungalow;
+	public Bungalow getMybungalow() {
+		return mybungalow;
+	}
+	public void setMybungalow(Bungalow mybungalow) {
+		this.mybungalow = mybungalow;
+	}
+	
+	
 }

@@ -22,7 +22,6 @@ public class Bungalow
 	private Long bungalowId;
 	private String bungalowName;
 	private String bungalowType;
-	private String name;
 	
 	
 	
@@ -52,25 +51,19 @@ public class Bungalow
 	}
 	
 	
-	public Bungalow(Long bungalowId, String bungalowName, String bungalowType, List<Rate> rates) {
+	public Bungalow(String bungalowName, String bungalowType) {
 		super();
-		this.bungalowId = bungalowId;
-		this.bungalowName = bungalowName;
-		this.bungalowType = bungalowType;
-		this.rates = rates;
-	}
-	public Bungalow(Long bungalowId, String bungalowName, String bungalowType) {
-		super();
-		this.bungalowId = bungalowId;
+		
 		this.bungalowName = bungalowName;
 		this.bungalowType = bungalowType;
 	}
-	public Bungalow() {
+		public Bungalow() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 	@OneToMany(mappedBy ="mybungalow",cascade={CascadeType.ALL})
 	private List<Rate> rates;
+	
 	
 
 }
