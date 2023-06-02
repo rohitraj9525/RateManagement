@@ -22,6 +22,7 @@ public class Bungalow
 	private Long bungalowId;
 	private String bungalowName;
 	private String bungalowType;
+	private String name;
 	
 	
 	
