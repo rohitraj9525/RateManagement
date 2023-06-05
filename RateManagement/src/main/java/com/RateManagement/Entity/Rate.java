@@ -1,88 +1,158 @@
 package com.RateManagement.Entity;
+
 import java.time.LocalDate;
-import java.util.Date;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import com.RateManagement.Entity.Bungalow;
+import jakarta.persistence.Table;
 
 
+/**
+ * @author R.Raj
+ *created Rate table in the database by using spring boot JPA concept
+ */
 
 @Entity
+@Table(name="rate")
 public class Rate 
 {
+	//class fields
+	
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
-	private Long id;
-	private LocalDate stayDateFrom;
-	private int nights;
-	private double value;
-	private LocalDate stayDateTo;
-	private LocalDate closeDate;
-	public Long getId() {
-		return id;
+	@Column(name="rate_Id")
+	private Long rateId;
+	
+	@Column(name = "stay_date_from")
+    private LocalDate stayDateFrom;
+
+    @Column(name = "stay_date_to")
+    private LocalDate stayDateTo;
+
+    @Column(name = "nights")
+    private int nights;
+
+    @Column(name = "value")
+    private double value;
+
+    //Many-To-One relationship
+    
+    @ManyToOne(targetEntity=Bungalow.class,cascade=CascadeType.PERSIST)
+    @JoinColumn(name = "bungalow_id",referencedColumnName="bungalowId")
+    private Bungalow bungalow;
+    
+
+    @Column(name = "closed_date")
+    private LocalDate closedDate;
+    
+    //Getter and Setter method
+
+
+
+	public Long getRateId() {
+		return rateId;
 	}
-	public void setId(Long id) {
-		this.id = id;
+
+
+	public void setRateId(Long rateId) {
+		this.rateId = rateId;
 	}
+
+
 	public LocalDate getStayDateFrom() {
 		return stayDateFrom;
 	}
+
+
 	public void setStayDateFrom(LocalDate stayDateFrom) {
 		this.stayDateFrom = stayDateFrom;
 	}
-	public int getNights() {
-		return nights;
-	}
-	public void setNights(int nights) {
-		this.nights = nights;
-	}
-	public double getValue() {
-		return value;
-	}
-	public void setValue(double value) {
-		this.value = value;
-	}
+
+
 	public LocalDate getStayDateTo() {
 		return stayDateTo;
 	}
+
+
 	public void setStayDateTo(LocalDate stayDateTo) {
 		this.stayDateTo = stayDateTo;
 	}
-	public LocalDate getCloseDate() {
-		return closeDate;
+
+
+	public int getNights() {
+		return nights;
 	}
-	public void setCloseDate(LocalDate closeDate) {
-		this.closeDate = closeDate;
+
+
+	public void setNights(int nights) {
+		this.nights = nights;
 	}
-	public Rate( LocalDate stayDateFrom, int nights, double value, LocalDate stayDateTo, LocalDate closeDate, Bungalow bungalow) {
+
+
+	public double getValue() {
+		return value;
+	}
+
+
+	public void setValue(double value) {
+		this.value = value;
+	}
+
+
+	public Bungalow getBungalow() {
+		return bungalow;
+	}
+
+
+	public void setBungalow(Bungalow bungalow) {
+		this.bungalow = bungalow;
+	}
+
+
+	public LocalDate getClosedDate() {
+		return closedDate;
+	}
+
+
+	public void setClosedDate(LocalDate closedDate) {
+		this.closedDate = closedDate;
+	}
+	
+	//Constructor using parameter
+
+
+
+	public Rate(Long rateId, LocalDate stayDateFrom, LocalDate stayDateTo, int nights, double value, Bungalow bungalow,
+			LocalDate closedDate) {
 		super();
+		this.rateId = rateId;
 		this.stayDateFrom = stayDateFrom;
+		this.stayDateTo = stayDateTo;
 		this.nights = nights;
 		this.value = value;
-		this.stayDateTo = stayDateTo;
-		this.closeDate = closeDate;
-		this.mybungalow=bungalow;
+		this.bungalow = bungalow;
+		this.closedDate = closedDate;
 	}
+
+	//Constructor with no arguments
+
 	public Rate() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	@ManyToOne(fetch=FetchType.LAZY,cascade={CascadeType.ALL})
-	@JoinColumn(name="bungalow_id")
-	private Bungalow mybungalow;
-	public Bungalow getMybungalow() {
-		return mybungalow;
+
+	//ToString method
+
+	@Override
+	public String toString() {
+		return "Rate [rateId=" + rateId + ", stayDateFrom=" + stayDateFrom + ", stayDateTo=" + stayDateTo + ", nights="
+				+ nights + ", value=" + value + ", bungalow=" + bungalow + ", closedDate=" + closedDate + "]";
 	}
-	public void setMybungalow(Bungalow mybungalow) {
-		this.mybungalow = mybungalow;
-	}
-	
 	
 }

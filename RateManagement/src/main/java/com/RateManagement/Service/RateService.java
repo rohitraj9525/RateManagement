@@ -2,10 +2,18 @@ package com.RateManagement.Service;
 
 import java.util.List;
 
-import com.RateManagement.Entity.Rate;
+import org.springframework.http.ResponseEntity;
+
+import com.RateManagement.DTO.RateDTO;
 
 public interface RateService 
 {
-	public List<Rate> getRate();
+    //public List<RateDTO> getALLRate();
+    public ResponseEntity<List<RateDTO>> getAllRates();
+    public ResponseEntity<RateDTO> getRateById(Long rateId);
+    //public ResponseEntity<RateDTO> createRate(RateDTO rateDTO);
+
+
+
 
 }
