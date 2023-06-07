@@ -2,6 +2,7 @@ package com.RateManagement.Repo;
 
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 import com.RateManagement.Entity.Rate;
@@ -12,7 +13,7 @@ import com.RateManagement.Entity.Rate;
  */
 
 @Repository
-public interface RateRepository extends JpaRepository<Rate, Long> 
+public interface RateRepository extends JpaRepository<Rate, Long>,JpaSpecificationExecutor<Rate>
 {
     // Add any custom repository methods if needed
 	//public List<Rate> findByBungalow(Bungalow bungalow);

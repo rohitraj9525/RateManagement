@@ -3,6 +3,9 @@ package com.RateManagement.Controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -10,9 +13,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.RateManagement.DTO.BungalowDTO;
+import com.RateManagement.Entity.Bungalow;
 import com.RateManagement.Service.BungalowService;
 
 /**
@@ -20,69 +25,68 @@ import com.RateManagement.Service.BungalowService;
  *Annotation for the RestAPI
  */
 
+
 @RestController
 @RequestMapping("bungalows")
 public class BungalowController {
 
     private final BungalowService bungalowService;
 
+    /**
+     * @param bungalowService
+     */
     @Autowired
     public BungalowController(BungalowService bungalowService) {
         this.bungalowService = bungalowService;
     }
 
-    
-    
-    
     /**
-     * @param Just passed Request mapping API with particular bungalowId  
-     * @return this REST API will return the All ROW of the bungalow table which is present in the database. 
+     * @return getAllBungalows
      */
-
     @GetMapping
-    public List<BungalowDTO> getAllBungalows() {
-        return bungalowService.getAllBungalows();
+//    public ResponseEntity<Page<Bungalow>> getAllBungalows(
+//    		@RequestParam(defaultValue = "0") int page,
+//    		@RequestParam(defaultValue = "5") int size) {
+//        Page<Bungalow> bungalows = bungalowService.getAllBungalowsByPagination(page,size);
+//        return ResponseEntity.ok(bungalows);
+//    }
+    public Page<Bungalow> getAllBungalows(Pageable pageable,
+            @RequestParam(required = false) String bungalowName,
+            @RequestParam(required = false) String bungalowType) {
+return bungalowService.getAllBungalows(pageable, bungalowName, bungalowType);
     }
-
-    /**
-     * @param Just passed Request mapping API   
-     * @return this REST API will return the particular ROW of the bungalow table of which bungalowId is passed. 
-     */
-
-    
-    @GetMapping("/{id}")
-    public BungalowDTO getBungalowById(@PathVariable Long id) {
-        return bungalowService.getBungalowById(id)
-;
-    }
-
-    /**
-     * @param parameter passed in the BungalowDTO Constructor are bugalowId, bungalowName, bungalowType
-     * @return this REST API will return as a create a Row in the bungalow table of the database. 
-     */
-    
-    @PostMapping
-    public BungalowDTO createBungalow(@RequestBody BungalowDTO bungalowDTO) {
-        return bungalowService.createBungalow(bungalowDTO);
-    }
-
-    
     /**
      * @param id
-     * @param bungalowDTO just passed API with bungaloId
-     * @return this API will update the particular row when we passed bungalowId
+     * @return getBungalowById
      */
-    @PutMapping("/{id}")
-    public BungalowDTO updateBungalow(@PathVariable Long id, @RequestBody BungalowDTO bungalowDTO) {
-        return bungalowService.updateBungalow(id, bungalowDTO);
+    @GetMapping("/{id}")
+    public Bungalow getBungalowById(@PathVariable Long id) {
+        return bungalowService.getBungalowById(id);
     }
 
     /**
-     * @param
-     * @param passed API with particular bungalow of which we have to delete it from the bungalow table
-     * @return this will delete a row of the table
+     * @param bungalow
+     * @return createBungalow
      */
-    
+    @PostMapping
+    public Bungalow createBungalow(@RequestBody Bungalow bungalow) {
+        return bungalowService.createBungalow(bungalow);
+    }
+
+    /**
+     * @param id
+     * @param updatedBungalow
+     * @return updateBungalow
+     */
+    @PutMapping("/{id}")
+    public Bungalow updateBungalow(@PathVariable Long id, @RequestBody Bungalow updatedBungalow) {
+        return bungalowService.updateBungalow(id, updatedBungalow);
+    }
+
+    /**
+     * @param id
+     * @return boolean
+     */
     @DeleteMapping("/{id}")
     public void deleteBungalow(@PathVariable Long id) {
         bungalowService.deleteBungalow(id);

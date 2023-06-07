@@ -3,6 +3,7 @@ package com.RateManagement.Repo;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 import com.RateManagement.Entity.Bungalow;
@@ -14,7 +15,7 @@ import com.RateManagement.Entity.Bungalow;
  */
 
 @Repository
-public interface BungalowRepository extends JpaRepository<Bungalow, Long> 
+public interface BungalowRepository extends JpaRepository<Bungalow, Long>,JpaSpecificationExecutor<Bungalow> 
 {
     // Add any custom repository methods if needed
 }

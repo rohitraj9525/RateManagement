@@ -5,94 +5,95 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.RateManagement.DTO.BungalowDTO;
 import com.RateManagement.Entity.Bungalow;
+import com.RateManagement.Exception.BungalowNotFoundException;
+//import com.RateManagement.Exception.BungalowNotFoundException;
 import com.RateManagement.Repo.BungalowRepository;
+import com.RateManagement.Specification.BungalowSpecification;
+
 
 @Service
 public class BungalowServiceImpl implements BungalowService {
 
     private final BungalowRepository bungalowRepository;
 
+    /**
+     * @param bungalowRepository
+     */
     @Autowired
     public BungalowServiceImpl(BungalowRepository bungalowRepository) {
         this.bungalowRepository = bungalowRepository;
     }
 
-    
-    //Business logic for get all the bungalows
-    
+    /**
+     * @return findAll
+     */
+//    @Override
+//    public List<Bungalow> getAllBungalows() {
+//        return bungalowRepository.findAll();
+//    }
     @Override
-    public List<BungalowDTO> getAllBungalows() {
-        List<Bungalow> bungalows = bungalowRepository.findAll();
-        return convertToDTOList(bungalows);
+//    public Page<Bungalow> getAllBungalowsByPagination(int page,int size) {
+//        Pageable pageable = PageRequest.of(page, size);
+//        return bungalowRepository.findAll(pageable);
+    public Page<Bungalow> getAllBungalows(Pageable pageable, String bungalowName, String bungalowType) {
+        Specification<Bungalow> spec = BungalowSpecification.searchBy(bungalowName, bungalowType);
+        return bungalowRepository.findAll(spec,pageable);
     }
 
-    //Business logic for get the bungalow by id
-
+    /**
+     * @param id
+     *@return findById
+     */
     @Override
-    public BungalowDTO getBungalowById(Long bungalowId) {
-        Optional<Bungalow> bungalow = bungalowRepository.findById(bungalowId)
-;
-        return bungalow.map(this::convertToDTO).orElse(null);
-    }
-    
-    //Business logic for create the bungalow
+    public Bungalow getBungalowById(Long id) {
+        return bungalowRepository.findById(id)
 
+                .orElseThrow(() -> new BungalowNotFoundException("Bungalow not found with id: " + id));
+    }
+
+    /**
+     * @return save the bungalow object
+     */
     @Override
-    public BungalowDTO createBungalow(BungalowDTO bungalowDTO) {
-        Bungalow bungalow = convertToEntity(bungalowDTO);
-        Bungalow savedBungalow = bungalowRepository.save(bungalow);
-        return convertToDTO(savedBungalow);
+    public Bungalow createBungalow(Bungalow bungalow) {
+        return bungalowRepository.save(bungalow);
     }
 
-    //Business logic for update the bungalow by id
-
+    /**
+     *@return business logic for update the particular Row of ID in the bungalow table
+     */
     @Override
-    public BungalowDTO updateBungalow(Long bungalowId, BungalowDTO bungalowDTO) {
-        Optional<Bungalow> bungalowOptional = bungalowRepository.findById(bungalowId)
-;
-        if (bungalowOptional.isPresent()) {
-            Bungalow existingBungalow = bungalowOptional.get();
-            existingBungalow.setBungalowName(bungalowDTO.getBungalowName());
-            existingBungalow.setBungalowType(bungalowDTO.getBungalowType());
-            Bungalow updatedBungalow = bungalowRepository.save(existingBungalow);
-            return convertToDTO(updatedBungalow);
-        }
-        return null;
+    public Bungalow updateBungalow(Long id, Bungalow updatedBungalow) {
+        Bungalow existingBungalow = bungalowRepository.findById(id)
+
+                .orElseThrow(() -> new BungalowNotFoundException("Bungalow not found with id: " + id));
+
+        existingBungalow.setBungalowName(updatedBungalow.getBungalowName());
+        existingBungalow.setBungalowId(updatedBungalow.getBungalowId());
+        existingBungalow.setBungalowType(updatedBungalow.getBungalowType());
+
+        return bungalowRepository.save(existingBungalow);
     }
 
-    //Business logic for delete the bungalow by id
-
+    /**
+     *@return business logic for delete the particular Row of ID in the bungalow table
+     */
     @Override
-    public void deleteBungalow(Long bungalowId) {
-        bungalowRepository.deleteById(bungalowId)
-;
-    }
+    public void deleteBungalow(Long id) {
+        Bungalow existingBungalow = bungalowRepository.findById(id)
 
-    // this method is for convert the table entity to DTO 
-    
-    private BungalowDTO convertToDTO(Bungalow bungalow) {
-        BungalowDTO bungalowDTO = new BungalowDTO();
-        bungalowDTO.setbungalowId(bungalow.getBungalowId());
-        bungalowDTO.setBungalowName(bungalow.getBungalowName());
-        bungalowDTO.setBungalowType(bungalow.getBungalowType());
-        return bungalowDTO;
-    }
+                .orElseThrow(() -> new BungalowNotFoundException("Bungalow not found with id: " + id));
 
-    private List<BungalowDTO> convertToDTOList(List<Bungalow> bungalows) {
-        return bungalows.stream().map(this::convertToDTO).collect(Collectors.toList());
-    }
-
-    //this method is to convert the DTO into the table entity
-    
-    private Bungalow convertToEntity(BungalowDTO bungalowDTO) {
-        Bungalow bungalow = new Bungalow();
-        bungalow.setBungalowId(bungalowDTO.getbungalowId());
-        bungalow.setBungalowName(bungalowDTO.getBungalowName());
-        bungalow.setBungalowType(bungalowDTO.getBungalowType());
-        return bungalow;
+        bungalowRepository.delete(existingBungalow);
     }
 }
+
+
