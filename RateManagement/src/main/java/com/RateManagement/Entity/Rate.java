@@ -212,8 +212,20 @@ public class Rate
 		//this.bungalow = bungalow;
 		this.closedDate = closedDate;
 	}
+	
+	
 
 	
+
+	public Rate(LocalDate stayDateFrom, LocalDate stayDateTo, int nights, double value, Long bungalowId) {
+		super();
+		this.stayDateFrom = stayDateFrom;
+		this.stayDateTo = stayDateTo;
+		this.nights = nights;
+		this.value = value;
+		this.bungalowId = bungalowId;
+	}
+
 
 	/**
 	 * @param this is the Auto generated constructor in which there is no argument..

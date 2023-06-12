@@ -9,10 +9,13 @@ import org.springframework.http.ResponseEntity;
 
 import com.RateManagement.DTO.RateDTO;
 import com.RateManagement.Entity.Rate;
+import java.io.ByteArrayInputStream;
+
 
 public interface RateService {
 
     Rate createRate(Rate rate);
+    
 
     Rate updateRate(Long id, Rate rate);
 
@@ -21,5 +24,7 @@ public interface RateService {
     Rate getRateById(Long id);
 
     Page<Rate> getAllRates(Pageable pageable, Long id, LocalDate stayDateFrom, LocalDate stayDateTo,
-    	    Integer nights, Double value, Long bungalowId);
+    	    Integer nights, Double value, Long bungalowId, LocalDate closedDate);
+    
+   // public ByteArrayInputStream load();
 }

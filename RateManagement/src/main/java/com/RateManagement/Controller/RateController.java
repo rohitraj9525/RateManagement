@@ -1,5 +1,6 @@
 package com.RateManagement.Controller;
 
+//import java.net.http.HttpHeaders;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -7,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,17 +22,35 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.RateManagement.DTO.RateDTO;
 import com.RateManagement.Entity.Rate;
+import com.RateManagement.Service.ExcelService;
 import com.RateManagement.Service.RateService;
+import org.springframework.http.HttpHeaders;
+
+import jakarta.annotation.Resource;
+
+//
+
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.MediaType;
+
+//
 
 @RestController
-@RequestMapping("/rates")
+@RequestMapping("/api/v1/rates")
 public class RateController {
 
     private final RateService rateService;
 
+    /**
+     * @param rateService
+     */
+    @Autowired
     public RateController(RateService rateService) {
         this.rateService = rateService;
     }
+    
+    @Autowired
+    ExcelService fileService;
 
     /**
      * @param rate
@@ -84,17 +104,59 @@ public class RateController {
          * @param bungalowId
          * @return get rate by specification of all fields
          */
+//        @GetMapping
+//        public ResponseEntity<List<Rate>> getAllRates(Pageable pageable,
+//                                                      @RequestParam(required = false) Long id,
+//                                                      @RequestParam(required = false) LocalDate stayDateFrom,
+//                                                      @RequestParam(required = false) LocalDate stayDateTo,
+//                                                      @RequestParam(required = false) Integer nights,
+//                                                      @RequestParam(required = false) Double value,
+//                                                      @RequestParam(required = false) Long bungalowId,
+//                                                      @RequestParam(required=false) LocalDate closedDate)
+//        {
+//            Page<Rate> rates = rateService.getAllRates(pageable, id, stayDateFrom, stayDateTo,
+//                    nights, value, bungalowId,closedDate);
+//            return ResponseEntity.ok(rates.getContent());
+        
+     
         @GetMapping
-        public ResponseEntity<List<Rate>> getAllRates(Pageable pageable,
+        public Page<Rate> getAllRates(Pageable pageable,
                                                       @RequestParam(required = false) Long id,
                                                       @RequestParam(required = false) LocalDate stayDateFrom,
                                                       @RequestParam(required = false) LocalDate stayDateTo,
                                                       @RequestParam(required = false) Integer nights,
                                                       @RequestParam(required = false) Double value,
-                                                      @RequestParam(required = false) Long bungalowId) {
-            Page<Rate> rates = rateService.getAllRates(pageable, id, stayDateFrom, stayDateTo,
-                    nights, value, bungalowId);
-            return ResponseEntity.ok(rates.getContent());
+                                                      @RequestParam(required = false) Long bungalowId,
+                                                      @RequestParam(required=false) LocalDate closedDate)
+        {
+//            Page<Rate> rates = rateService.getAllRates(pageable, id, stayDateFrom, stayDateTo,
+//                    nights, value, bungalowId,closedDate);
+            return rateService.getAllRates(pageable, id, stayDateFrom, stayDateTo, nights, value, bungalowId, closedDate);
         }
- }
+        
+        //Download
+        
+        @GetMapping("/download")
+        public ResponseEntity<InputStreamResource> getFile() {
+          String filename = "rates.xlsx";
+          InputStreamResource file = new InputStreamResource(fileService.load());
+
+          return ResponseEntity.ok()
+              .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
+              .contentType(MediaType.parseMediaType("application/vnd.ms-excel"))
+              .body(file);
+        }
+
+        
+        
+        
+        
+        
+        
+        
+        
+        //upload
+}
+
+ 
     

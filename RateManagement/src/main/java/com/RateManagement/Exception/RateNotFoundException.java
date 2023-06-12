@@ -7,5 +7,6 @@ public class RateNotFoundException extends RuntimeException {
      */
 	public RateNotFoundException(String string) {
         super("Rate not found with id: " + string);
-    }}
+    }
+}
 

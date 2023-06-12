@@ -22,7 +22,7 @@ public class RateSpecification {
      * @return logic for specification of get rate by id, staydatefrom, staydateto, nights, value, bungalowId
      */
     public static Specification<Rate> searchByCriteria(Long id, LocalDate stayDateFrom, LocalDate stayDateTo,
-                                                       Integer nights, Double value, Long bungalowId) {
+                                                       Integer nights, Double value, Long bungalowId, LocalDate closedDate) {
         return (root, query, builder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
@@ -31,11 +31,16 @@ public class RateSpecification {
             }
 
             if (stayDateFrom != null) {
+            	//if(closedDate!=LocalDate.now())
+            		
                 predicates.add(builder.greaterThanOrEqualTo(root.get("stayDateFrom"), stayDateFrom));
+            	predicates.add(builder.isNull(root.get("closedDate")));
             }
 
             if (stayDateTo != null) {
+            	//if(closedDate!=LocalDate.now())
                 predicates.add(builder.lessThanOrEqualTo(root.get("stayDateTo"), stayDateTo));
+            	predicates.add(builder.isNull(root.get("closedDate")));
             }
 
             if (nights != null) {

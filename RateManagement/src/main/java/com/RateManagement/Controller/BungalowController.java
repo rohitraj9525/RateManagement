@@ -27,7 +27,7 @@ import com.RateManagement.Service.BungalowService;
 
 
 @RestController
-@RequestMapping("bungalows")
+@RequestMapping("/api/v1/rates/bungalows")
 public class BungalowController {
 
     private final BungalowService bungalowService;
@@ -52,8 +52,9 @@ public class BungalowController {
 //    }
     public Page<Bungalow> getAllBungalows(Pageable pageable,
             @RequestParam(required = false) String bungalowName,
-            @RequestParam(required = false) String bungalowType) {
-return bungalowService.getAllBungalows(pageable, bungalowName, bungalowType);
+            @RequestParam(required = false) String bungalowType) 
+    {
+         return bungalowService.getAllBungalows(pageable, bungalowName, bungalowType);
     }
     /**
      * @param id

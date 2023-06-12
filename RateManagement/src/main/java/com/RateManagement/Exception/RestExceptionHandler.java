@@ -7,11 +7,18 @@ import java.util.Map;
 
 import org.hibernate.validator.internal.engine.path.PathImpl;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 
+
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 
@@ -53,5 +60,21 @@ public class RestExceptionHandler
 		responseMap.put("message", ex.getMessage());
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseMap);
 	}
+	
+	@ExceptionHandler(DuplicateRateException.class)
+    public ResponseEntity<String> handleDuplicateRateException(DuplicateRateException ex) {
+		String errorMessage=ex.getMessage();
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorMessage);
+	}
+	
+	
+	
+	@ControllerAdvice
+	public class ErrorController {
+	    @ExceptionHandler(HttpMessageNotReadableException.class)
+	    public ResponseEntity<String> handleException(HttpMessageNotReadableException exception, HttpServletRequest request) {
+	        return new ResponseEntity<>("You gave an incorrect value for LocalDate. please Enter Correct Input....", HttpStatus.BAD_REQUEST);
+	    }
+	}	}
 
-}
+
