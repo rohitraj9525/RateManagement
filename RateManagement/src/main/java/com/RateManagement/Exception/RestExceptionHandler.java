@@ -67,6 +67,13 @@ public class RestExceptionHandler
         return ResponseEntity.status(HttpStatus.CONFLICT).body(errorMessage);
 	}
 	
+	@ExceptionHandler(NullPointerException.class)
+    public ResponseEntity<String> handleNullPointerException(NullPointerException ex) {
+        // Handle the exception and return an error response
+		ex.printStackTrace();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+    }
+	
 	
 	
 	@ControllerAdvice

@@ -1,5 +1,6 @@
 package com.RateManagement.Controller;
 
+import java.io.ByteArrayInputStream;
 //import java.net.http.HttpHeaders;
 import java.time.LocalDate;
 import java.util.List;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.RateManagement.DTO.RateDTO;
 import com.RateManagement.Entity.Rate;
@@ -27,6 +30,7 @@ import com.RateManagement.Service.RateService;
 import org.springframework.http.HttpHeaders;
 
 import jakarta.annotation.Resource;
+import jakarta.validation.Valid;
 
 //
 
@@ -39,27 +43,43 @@ import org.springframework.http.MediaType;
 @RequestMapping("/api/v1/rates")
 public class RateController {
 
+	@Autowired
     private final RateService rateService;
+    @Autowired
+    private final ExcelService excelService;
+
 
     /**
      * @param rateService
      */
-    @Autowired
+    //@Autowired
     public RateController(RateService rateService) {
         this.rateService = rateService;
+		this.excelService = null;
     }
     
-    @Autowired
-    ExcelService fileService;
+    
 
     /**
      * @param rate
      * @return create rate
      */
     @PostMapping
-    public ResponseEntity<Rate> createRate(@RequestBody Rate rate) {
+    public ResponseEntity<String> createRate(@Valid @RequestBody Rate rate) 
+    {
+    	if(rate.getStayDateFrom().isAfter(rate.getStayDateTo()))
+    	{
+    		return ResponseEntity.badRequest().body("Invalid stay date. 'stayDateFrom' must be before or equal to 'stayDateTo'."); 
+    	}
+    	if(rate.getStayDateFrom()==null||rate.getStayDateTo()==null)
+    	{
+    		return ResponseEntity.badRequest().body("Inavlid Stay Dates. 'stayDateTo and stayDateFrom' cannot be null");
+    	}
         Rate createdRate = rateService.createRate(rate);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdRate);
+               
+        return ResponseEntity.status(HttpStatus.CREATED).body("Rate created succesfully with ID: " +createdRate.getRateId());
+        
+        
     }
 
     /**
@@ -68,9 +88,24 @@ public class RateController {
      * @return update rate
      */
     @PutMapping("/{id}")
-    public ResponseEntity<Rate> updateRate(@PathVariable("id") Long id, @RequestBody Rate rate) {
-        Rate updatedRate = rateService.updateRate(id, rate);
-        return ResponseEntity.ok(updatedRate);
+public ResponseEntity<String> updateRate(@PathVariable("id") Long id, @Valid  @RequestBody Rate rate) 
+    {
+    	if(rate.getStayDateFrom()==null||rate.getStayDateTo()==null)
+    	{
+    		return ResponseEntity.badRequest().body("Invalid Stay date. 'stayDateFrom' and 'stayDateTo' cannot be null");
+    	}
+    	if(rate.getStayDateFrom().isAfter(rate.getStayDateTo()))
+    	{
+    		return ResponseEntity.badRequest().body("Invalid stay dates. 'stayDateFrom' must be before or equal to 'stayDateTo");
+    	}
+        //Rate updatedRate = rateService.updateRate(id, rate);
+    	Rate updatedRate=rateService.getRateById(id);
+    	
+        if(updatedRate==null)
+        {
+        	return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Rate Not Found..please enter correct RateID");
+        }
+        return ResponseEntity.ok("Rate updated succesfully with ID: ");
     }
 
     /**
@@ -78,7 +113,14 @@ public class RateController {
      * @return boolean this mehod is for delete the row by id
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteRate(@PathVariable("id") Long id) {
+    public ResponseEntity<String> deleteRate(@Valid @PathVariable("id") Long id) 
+    {
+      Rate deletedRate=rateService.getRateById(id);
+    	
+        if(deletedRate==null)
+        {
+        	return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Rate Not Found..please enter correct RateID");
+        }  	
         rateService.deleteRate(id);
         return ResponseEntity.noContent().build();
     }
@@ -88,7 +130,8 @@ public class RateController {
      * @return get rate by id
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Rate> getRateById(@PathVariable("id") Long id) {
+    public ResponseEntity<Rate> getRateById(@Valid @PathVariable("id") Long id)
+    {
         Rate rate = rateService.getRateById(id);
         return ResponseEntity.ok(rate);
     }
@@ -136,22 +179,48 @@ public class RateController {
         
         //Download
         
+        //private final FileService fileService1;
+        
+        
         @GetMapping("/download")
-        public ResponseEntity<InputStreamResource> getFile() {
-          String filename = "rates.xlsx";
-          InputStreamResource file = new InputStreamResource(fileService.load());
+        public ResponseEntity<InputStreamResource> getFile(
+                @RequestParam(name = "bungalowId",required = false) Long bungalowId,
+                @RequestParam(name = "nights",required = false) Integer nights,
+                @RequestParam(name = "stayDateFrom",required = false) String stayDateFrom,
+                @RequestParam(name = "stayDateTo",required = false) String stayDateTo,
+                @RequestParam(name = "value",required = false) Double value,
+                @RequestParam(name = "closedDate",required = false) String closedDate
+                
+        ) {
+            String filename = "rates.xlsx";
+            ByteArrayInputStream inputStream = excelService.exportFilteredRates(
+                    bungalowId, nights, stayDateFrom, stayDateTo, value, closedDate);
 
-          return ResponseEntity.ok()
-              .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
-              .contentType(MediaType.parseMediaType("application/vnd.ms-excel"))
-              .body(file);
+            InputStreamResource file = new InputStreamResource(inputStream);
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
+                    .contentType(MediaType.parseMediaType("application/vnd.ms-excel"))
+                    .body(file);
+        }        
+        
+        
+        @PostMapping("/import")
+        public ResponseEntity<String> importRates(@RequestParam("file") MultipartFile file)
+        {
+        	try
+        	{
+        		ExcelService.importRatesFromExcel(file);
+        		return ResponseEntity.status(HttpStatus.OK).body("Rates imported successfully.");
+        	}
+        	catch (Exception e)
+        	{
+        		e.printStackTrace();
+        		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to import rates: " +e.getMessage());
+        	}
+        	
         }
-
-        
-        
-        
-        
-        
+//        
         
         
         

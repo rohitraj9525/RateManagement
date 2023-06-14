@@ -5,6 +5,7 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -31,24 +32,42 @@ public interface RateRepository extends JpaRepository<Rate, Long>,JpaSpecificati
 		    List<Rate> findByBungalowIdAndStayDateFromBeforeAndStayDateToAfter(
 	            Long bungalowId, LocalDate stayDateTo, LocalDate stayDateFrom);
 		    
+		    List<Rate> findAll(Specification<Rate> specification);
+		    
 		   
 
 	    	    
-	    @Query(value = "SELECT r FROM Rate r " +
-	            "WHERE r.bungalowId = :bungalowId " +
-	    		"AND r.closedDate IS NULL" + " AND r.nights= :nights " +
-	            "AND ((r.stayDateFrom <= :stayDateFrom AND r.stayDateTo >= :stayDateFrom) " + 
-	            "OR (r.stayDateFrom <= :stayDateTo AND r.stayDateTo >= :stayDateTo)"
-	            + "OR (r.stayDateFrom > :stayDateFrom AND r.stayDateTo < :stayDateTo)"
-	           + "OR (r.stayDateFrom = :#{#stayDateTo.plusDays(1)}) " +
-	            "OR (r.stayDateTo = :#{#stayDateFrom.minusDays(1)}) )")
-
-	     List<Rate> findOverlappingRates(@Param("bungalowId") Long bungalowId,
-	                                     @Param("stayDateFrom") LocalDate stayDateFrom,
-	                                     @Param("stayDateTo") LocalDate stayDateTo,
-	                                     @Param("nights") int nights);
-	                                     
-	                                     
+//	    @Query(value = "SELECT r FROM Rate r " +
+//	            "WHERE r.bungalowId = :bungalowId " +
+//	    		"AND r.closedDate IS NULL" + " AND r.nights= :nights " +
+//	            "AND ((r.stayDateFrom <= :stayDateFrom AND r.stayDateTo >= :stayDateFrom) " + 
+//	            "OR (r.stayDateFrom <= :stayDateTo AND r.stayDateTo >= :stayDateTo)"
+//	            + "OR (r.stayDateFrom > :stayDateFrom AND r.stayDateTo < :stayDateTo)"
+//	           + "OR (r.stayDateFrom = :#{#stayDateTo.plusDays(1)}) " +
+//	            "OR (r.stayDateTo = :#{#stayDateFrom.minusDays(1)}) )")
+//
+//	     List<Rate> findOverlappingRates(@Param("bungalowId") Long bungalowId,
+//	                                     @Param("stayDateFrom") LocalDate stayDateFrom,
+//	                                     @Param("stayDateTo") LocalDate stayDateTo,
+//	                                     @Param("nights") int nights);
+	    
+//	    @Query(value = "SELECT r FROM Rate r " +
+//	            "WHERE r.bungalowId = :bungalowId " +
+//	            "AND r.closedDate IS NULL" +
+//	            " AND r.nights = :nights " +
+//	            "AND ((r.stayDateFrom <= :stayDateFrom AND r.stayDateTo >= :stayDateFrom) " +
+//	            "OR (r.stayDateFrom <= :stayDateTo AND r.stayDateTo >= :stayDateTo) " +
+//	            "OR (r.stayDateFrom > :stayDateFrom AND r.stayDateTo < :stayDateTo) " +
+//	            "OR (r.stayDateFrom = :#{#stayDateTo.plusDays(1)}) " +
+//	            "OR (r.stayDateTo = :#{#stayDateFrom.minusDays(1)}) )" +
+//	            "AND r.value = :value")
+//	    List<Rate> overlappingRateMerge(@Param("bungalowId") Long bungalowId,
+//	                                                 @Param("stayDateFrom") LocalDate stayDateFrom,
+//	                                                 @Param("stayDateTo") LocalDate stayDateTo,
+//	                                                 @Param("nights") int nights,
+//	                                                 @Param("value") double value);
+//	                                     
+//	                                     
 	    
 	    
 

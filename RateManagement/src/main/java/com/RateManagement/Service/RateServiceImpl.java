@@ -81,11 +81,13 @@ public class RateServiceImpl implements RateService {
          
          
          
-         List<Rate> updatedRates = new ArrayList<>();
 
          // Retrieve overlapping rates
          
-         List<Rate> overlappingRates = rateRepository.findOverlappingRates(rate.getBungalowId(), rate.getStayDateFrom(), rate.getStayDateTo(), rate.getNights());
+         //List<Rate> overlappingRates = rateRepository.findOverlappingRates(rate.getBungalowId(), rate.getStayDateFrom(), rate.getStayDateTo(), rate.getNights());
+         List<Rate> overlappingRates = rateRepository.findAll(RateSpecification.findOverlappingRates(rate.getBungalowId(), rate.getStayDateFrom(), rate.getStayDateTo(), rate.getNights()));
+         List<Rate> overlappingRateMerge = rateRepository.findAll(RateSpecification.overlappingRateMerge(rate.getBungalowId(), rate.getStayDateFrom(), rate.getStayDateTo(), rate.getNights(),rate.getValue()));
+
 
          if (overlappingRates.isEmpty()) 
            {
@@ -96,241 +98,26 @@ public class RateServiceImpl implements RateService {
           	 
            {
                split(rate, overlappingRates);
-               overlappingRates = rateRepository.findOverlappingRates(rate.getBungalowId(), rate.getStayDateFrom(), rate.getStayDateTo(), rate.getNights());
-               System.out.println(rate);
-               for(Rate temp : overlappingRates){
-            	   System.out.println(temp);
-               }
-               merge(rate, overlappingRates);
-               return rate;
+               overlappingRateMerge = rateRepository.findAll(RateSpecification.overlappingRateMerge(rate.getBungalowId(), rate.getStayDateFrom(), rate.getStayDateTo(), rate.getNights(),rate.getValue()));              
+               merge(rate, overlappingRateMerge);
            }
-       }
+       		   return rate;
+
+  }
     
 //MERGE OF THE CREATE RATE   //method for merging the rate 
     
-  private void merge(Rate rate, List<Rate> overlappingRates) 
+  private void merge(Rate rate, List<Rate> overlappingRateMerge) 
   {
 		// TODO Auto-generated method stub
+	  //sort the overlapping rates by staydatefrom in ascending order
+	  overlappingRateMerge.sort(Comparator.comparing(Rate::getStayDateFrom));
 	  
-	  for(Rate existingRate : overlappingRates)
-	  {
-		  //check if the rate has the same nights and bungalowID
-		  if(existingRate.getNights()==rate.getNights()&&existingRate.getBungalowId()==rate.getBungalowId()&&existingRate.getValue()==rate.getValue()&&existingRate.getClosedDate()==null)
-		  {
-			  //CASE:01- check if the new rate completely overlaps the existing rate and has the same value
-			  
-			  if(rate.getStayDateFrom().isBefore(existingRate.getStayDateFrom())&&rate.getStayDateTo().isAfter(existingRate.getStayDateTo()))
-			  {
-				  
-				  //save of the new rate
-				  
-				  rateRepository.save(rate);
-				  
-				  //closed date for the existing rate
-				  
-				  existingRate.setClosedDate(LocalDate.now());
-				  
-				  //save in the rate table
-				  
-				  rateRepository.save(existingRate);
-         		 System.out.println("case 01 merging");
+	    for (int i = 0; i < overlappingRateMerge.size(); i++) {
+	        Rate existingRate = overlappingRateMerge.get(i);
 
-				  
-				  
-			  }
-			  
-			  //CASE:02- check if the existing rate has the same stay dates as the new rate and has the same values
-			  
-//			  else if(rate.getStayDateFrom().isEqual(existingRate.getStayDateFrom())&&rate.getStayDateTo().isEqual(existingRate.getStayDateTo()))
-//			  {
-//				  //save of the new rate
-//				  
-//				  rateRepository.save(rate);
-//				  
-//				  //closed of the existing rate 
-//				  
-//				  existingRate.setClosedDate(LocalDate.now());
-//				  
-//				  //save in the rate table
-//				  
-//				  rateRepository.save(existingRate);
-//	         		 System.out.println("case 02 merging");
-//
-//			  }
-			  
-			  //CASE:03- check if the existing rate ends exactly at the start of the new rate
-			  
-			  else if(rate.getStayDateFrom().isEqual(existingRate.getStayDateTo())&&rate.getStayDateTo().isAfter(existingRate.getStayDateTo()))
-			  {
-				  
-				  //merge the existing rate with the new rate by updating the stay date to of existing rate
-				  //existingRate.setStayDateTo(rate.getStayDateTo());
-				  rate.setStayDateFrom(existingRate.getStayDateFrom());
-			  
-			  //save the new rate
-			  
-			  rateRepository.save(rate);
-			  
-			  //closed date to local date now of the existing rate
-			  
-			  existingRate.setClosedDate(LocalDate.now());
-			  
-			  //save the existing rate to the rate Repo
-			  
-			  rateRepository.save(existingRate);
-      		 System.out.println("case 03 merging");
-
-			  
-			  }
-			  
-			  //CASE:04- check if the new rate stay date to is equal to the stay date from	of the existing rate
-			  
-			  else if(rate.getStayDateTo().isEqual(existingRate.getStayDateFrom()))
-			  {
-				  //merge the existing rate with the new rate
-				  
-				  rate.setStayDateTo(existingRate.getStayDateTo());
-				  
-				  //save the new rate
-				  
-				  rateRepository.save(rate);
-				  
-				  //closed date to the local date now to the existing 
-				  
-				  existingRate.setClosedDate(LocalDate.now());
-				  
-				  //save the closed date of the NOTNULL to the rate table
-				  
-				  rateRepository.save(existingRate);
-	         		 System.out.println("case 04 merging");
-
-				  
-			  }
-			  
-			  //CASE: 05-- if the stay date from of new rate lies in between existing rate but stay date to of new rate lies
-			  // after the stay date to of existing rate
-			  
-			  else if(rate.getStayDateFrom().isBefore(existingRate.getStayDateTo())&&rate.getStayDateTo().isAfter(existingRate.getStayDateTo())&&rate.getStayDateFrom().isAfter(existingRate.getStayDateFrom()))
-			  {
-				  //merge the stay date to of existing to the stay date to of new rate
-				  
-				  //existingRate.setStayDateTo(rate.getStayDateTo());
-				  rate.setStayDateFrom(existingRate.getStayDateFrom());
-				  
-				  
-				  //save the new rate
-				  
-				  rateRepository.save(rate);
-				  
-				  //set closed date of exustung rate to localdate now
-				  
-				  existingRate.setClosedDate(LocalDate.now());
-				  
-				  //save the existing not null rate
-				  
-				  rateRepository.save(existingRate);
-	         		 System.out.println("case 05 merging");
-
-				  
-				  
-			  }
-			  
-			  //CASE 06:- if the stay date from of new rate is before the stay date from of existing rate nut the stay date 
-			  // to of the new rate is after the stay date from of existing rate but before from the stay date to of existing rate
-			  
-			  else if(rate.getStayDateFrom().isBefore(existingRate.getStayDateFrom())&&rate.getStayDateTo().isAfter(existingRate.getStayDateFrom())&&rate.getStayDateTo().isBefore(existingRate.getStayDateTo()))
-			  {
-				  //merge of the existing rate with the new rate
-				  
-				  //existingRate.setStayDateFrom(rate.getStayDateFrom());
-				  
-				  rate.setStayDateTo(existingRate.getStayDateTo());
-				  
-				  //save the new rate
-				  
-				  rateRepository.save(rate);
-				  
-				  //set closed date of existing to the inactive
-				  
-				  existingRate.setClosedDate(LocalDate.now());
-				  
-				  //save the inactive exisitng rate
-				  
-				  rateRepository.save(existingRate);
-	         		 System.out.println("case 06 merging");
-
-			  }
-			  
-			  //CASE 07:- complete overlaps that mean the new rate completely inside the existing rate
-			  
-			  else if(rate.getStayDateFrom().isAfter(existingRate.getStayDateFrom())&&rate.getStayDateTo().isBefore(existingRate.getStayDateTo()))
-			  {
-				  //merge the new rate with existing rate
-				  
-				  rate.setStayDateFrom(existingRate.getStayDateFrom());
-				  rate.setStayDateTo(existingRate.getStayDateTo());
-				  
-				  //save the new rate
-				  
-				  rateRepository.save(rate);
-				  
-				  //set closed date of existing to local date now
-				  
-				  existingRate.setClosedDate(LocalDate.now());
-				  
-				  //save the existing rate
-				  
-				  rateRepository.save(existingRate);
-	         		 System.out.println("case 07 merging");
-
-			  }
-			  
-			  //CASE 08:-if the existing rate lies in between the new rate
-			  
-			  else if(rate.getStayDateFrom().isBefore(existingRate.getStayDateFrom())&&rate.getStayDateTo().isAfter(existingRate.getStayDateTo()))
-			  {
-				  // save the all rate
-				  //Rate temp = new Rate(rate.getStayDateFrom(), rate.getStayDateTo(), rate.getNights(), rate.getValue(), rate.getBungalowId());
-				  rateRepository.save(rate);
-				  
-				  //set closed date of existing rate to inactive
-				  
-				  existingRate.setClosedDate(LocalDate.now());
-				  
-				  //save the existing rate
-				  
-				  rateRepository.save(existingRate);
-	         		 System.out.println("case 08 merging");
-
-			  }
-			  
-			  //CASE 09:-   if the stay date from of of new rate is just a day after of stay date to of existing rate but the stay date to new 
-			  //rate is after the stay date to of existing rate and the stay date from of the existing rate is before of stay date from of stay date from
-			  
-			  else if(rate.getStayDateFrom().equals(existingRate.getStayDateTo().plusDays(1)))
-					  
-			  {
-				  
-				  existingRate.setClosedDate(LocalDate.now());
-				  rateRepository.save(existingRate);
-				  if(rate.getRateId() == null) {
-					  rate.setStayDateFrom(existingRate.getStayDateFrom());
-					  rateRepository.save(rate);
-				  }
-				  else {
-					  rate.setClosedDate(LocalDate.now());
-					  
-					  rateRepository.save(rate);
-					  Rate rateAfter=new Rate(existingRate.getStayDateFrom(),rate.getStayDateTo(),rate.getNights(),rate.getValue(),rate.getBungalowId());
-					  rate = rateRepository.save(rateAfter);
-					  
-				  }
-				  
-          		
-			  }
-			  
-			  //CASE 10:  
-			  else if (rate.getStayDateTo().equals(existingRate.getStayDateFrom().minusDays(1))) 
+	        //CASE01:-- Check if the existing rate's stayDateFrom is adjacent to the new rate's stayDateTo
+			  if (rate.getStayDateTo().equals(existingRate.getStayDateFrom().minusDays(1))) 
 			  {
 				  existingRate.setClosedDate(LocalDate.now());
 				  
@@ -348,14 +135,29 @@ public class RateServiceImpl implements RateService {
 					  rate = rateRepository.save(rateAfter);					  
 				  }				  
 			  }
-			  
-			  
-			  //
-			  
-			  
-		  }
-	  }
-		
+	        //CASE02:-- Check if the existing rate's stayDateTo is adjacent to the new rate's stayDateFrom
+			  else if(rate.getStayDateFrom().equals(existingRate.getStayDateTo().plusDays(1)))
+				  
+			  {
+				  
+				  existingRate.setClosedDate(LocalDate.now());
+				  rateRepository.save(existingRate);
+				  if(rate.getRateId() == null) {
+					  rate.setStayDateFrom(existingRate.getStayDateFrom());
+					  rateRepository.save(rate);
+				  }
+				  else {
+					  rate.setClosedDate(LocalDate.now());
+					  
+					  rateRepository.save(rate);
+					  Rate rateAfter=new Rate(existingRate.getStayDateFrom(),rate.getStayDateTo(),rate.getNights(),rate.getValue(),rate.getBungalowId());
+					  rate = rateRepository.save(rateAfter);
+					  
+				  }
+				  
+        		
+			  }
+	    }
   }
 
               // End of the merging method
@@ -365,6 +167,8 @@ public class RateServiceImpl implements RateService {
     private void split(Rate rate, List<Rate> overlappingRates) 
     
  {   //.....start
+  	  overlappingRates.sort(Comparator.comparing(Rate::getStayDateFrom));
+
 
          for (Rate existingRate : overlappingRates) 
          {
@@ -577,26 +381,7 @@ public class RateServiceImpl implements RateService {
             		 rateRepository.save(existingRate);
             		 rateRepository.save(rate);
             	 }
-//            	 else if(rate.getStayDateFrom().isBefore(existingRate.getStayDateFrom())&&rate.getStayDateTo().isAfter(existingRate.getStayDateTo()))
-//            	 {
-//            		 //save the new rate
-//            		 
-//            		 Rate rateAfter=new Rate(existingRate.se)
-//            		 
-//            		 rateRepository.save(rate);
-//            		 
-//            		 //set now of closed date of existing rate
-//            		 if(existingRate.getClosedDate()==null)
-//            		 {
-//            		 existingRate.setClosedDate(LocalDate.now());
-//            		 
-//            		 //save of the existing inactive rate
-//            		 
-//            		 rateRepository.save(existingRate);
-//            		 }
-//            		 
-//            	 }
-            	 //CASE 09:- complete inside the existing rate in the new rate in that all the closed date should be CLosedDATE be INACTIVE
+//            	 
             	 
             	 //CASE 09: if the new rate stay date from is before of the existing rate stay date from 
             	 //and stay date to of new rate is before stay date to of existing rate
@@ -618,7 +403,7 @@ public class RateServiceImpl implements RateService {
             	 
             	 else if(rate.getStayDateFrom().isAfter(existingRate.getStayDateFrom())&&rate.getStayDateTo().isAfter(existingRate.getStayDateTo())&&rate.getStayDateFrom().isBefore(existingRate.getStayDateTo())) 
             	 {
-            		 Rate rateBefore=new Rate(existingRate.getStayDateFrom(),rate.getStayDateFrom().minusDays(0),existingRate.getNights(),existingRate.getValue(),existingRate.getBungalowId());
+            		 Rate rateBefore=new Rate(existingRate.getStayDateFrom(),rate.getStayDateFrom().minusDays(1),existingRate.getNights(),existingRate.getValue(),existingRate.getBungalowId());
             		 
             		 rateRepository.save(rateBefore);
             		 rateRepository.save(rate);
@@ -627,6 +412,27 @@ public class RateServiceImpl implements RateService {
             		 rateRepository.save(existingRate);
             		 
             		 System.out.println("Case 10 of splitting in create");
+            	 }
+            	 
+            	 //CASE 11:- if Stay-date-from(rate)==stay_date_to(rate) && stay_date_to(rate)>stay_date_to(existing rate)
+            	 else if(rate.getStayDateFrom().isEqual(existingRate.getStayDateTo())&&rate.getStayDateTo().isAfter(existingRate.getStayDateTo()))
+            	 {
+            		 Rate rateBefore=new Rate(existingRate.getStayDateFrom(),rate.getStayDateFrom().minusDays(1),existingRate.getNights(),existingRate.getValue(),existingRate.getBungalowId());
+            		 rateRepository.save(rateBefore);
+            		 rateRepository.save(rate);
+            		 existingRate.setClosedDate(LocalDate.now());
+            		 rateRepository.save(existingRate);
+            		 System.out.println("case 11 splitting");
+            	 }
+            	 
+            	 else if(rate.getStayDateFrom().isBefore(existingRate.getStayDateFrom())&&rate.getStayDateTo().isEqual(existingRate.getStayDateFrom())) {
+            		 Rate rateAfter = new Rate(rate.getStayDateTo().plusDays(1),existingRate.getStayDateTo(),existingRate.getNights(),existingRate.getValue(),existingRate.getBungalowId());
+            		  rateRepository.save(rateAfter);
+            		  rateRepository.save(rate);
+            		  existingRate.setClosedDate(LocalDate.now());
+            		  rateRepository.save(existingRate);
+            		  
+            		  System.out.println("case 12 splitting");
             	 }
              }
          }        
@@ -664,27 +470,36 @@ public class RateServiceImpl implements RateService {
         //......................................................
         
         //Splitting and merging logic
+   	 Rate existingRates=rateRepository.findByFields(rate.getStayDateFrom(), rate.getStayDateTo(), rate.getNights(), rate.getValue(), rate.getBungalowId());    
+
         
-        List<Rate> overlappingRates = rateRepository.findOverlappingRates(rate.getBungalowId(), rate.getStayDateFrom(), rate.getStayDateTo(), rate.getNights());
+    	List<Rate> overlappingRates = rateRepository.findAll(RateSpecification.findOverlappingRates(rate.getBungalowId(), rate.getStayDateFrom(), rate.getStayDateTo(), rate.getNights()));
+        List<Rate> overlappingRateMerge = rateRepository.findAll(RateSpecification.overlappingRateMerge(rate.getBungalowId(), rate.getStayDateFrom(), rate.getStayDateTo(), rate.getNights(),rate.getValue()));   
+
 
         if (overlappingRates.isEmpty()) 
-          {
-              return rateRepository.save(rate);
-          } 
-          
-          else 
-         	 
-          {
-              splitUpdate(rate, overlappingRates);
-              overlappingRates = rateRepository.findOverlappingRates(rate.getBungalowId(), rate.getStayDateFrom(), rate.getStayDateTo(), rate.getNights());
-
-              mergeUpdate(rate, overlappingRates);
-              return rate;
-          }
-      }
-   
+        {
+            return rateRepository.save(rate);
+        } 
         
-//SPLITING OF THE UPDATE  // logic for splitting the rate table while updating the rate table by rateID      
+        else 
+       	 
+        {
+        	splitUpdate(rate, overlappingRates);
+            overlappingRateMerge = rateRepository.findAll(RateSpecification.overlappingRateMerge(rate.getBungalowId(), rate.getStayDateFrom(), rate.getStayDateTo(), rate.getNights(),rate.getValue()));
+
+            if(!overlappingRateMerge.isEmpty())
+            {
+                if(existingRates!= null && rate.getValue()==existingRates.getValue()) 
+                {
+                mergeUpdate(rate, overlappingRateMerge);
+                }
+            }
+    		   return rate;
+
+            }
+        }
+		//SPLITING OF THE UPDATE  // logic for splitting the rate table while updating the rate table by rateID      
         
         private void splitUpdate(Rate updateRate, List<Rate> overlappingRates) 
         {
@@ -947,10 +762,10 @@ public class RateServiceImpl implements RateService {
         
 //MERGE        // logic for merging the rate table while updating the rate table by rateID 
 
-		private void mergeUpdate(Rate update, List<Rate> overlappingRates) 
+		private void mergeUpdate(Rate update, List<Rate> overlappingRateMerge) 
 		{
 	        // TODO Auto-generated method stub
-			 for(Rate existingRate : overlappingRates)
+			 for(Rate existingRate : overlappingRateMerge)
 			  {
 				  //check if the rate has the same nights and bungalowID
 				  if(existingRate.getNights()==update.getNights()&&existingRate.getBungalowId()==update.getBungalowId()&&existingRate.getValue()==update.getValue()&&existingRate.getClosedDate()==null)
@@ -1256,9 +1071,5 @@ public class RateServiceImpl implements RateService {
     
     //............................End of download
 
-    
-    
-    
-    
-    
+      
 }

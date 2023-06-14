@@ -45,17 +45,93 @@ public class RateSpecification {
 
             if (nights != null) {
                 predicates.add(builder.equal(root.get("nights"), nights));
+            	predicates.add(builder.isNull(root.get("closedDate")));
+
             }
 
             if (value != null) {
                 predicates.add(builder.equal(root.get("value"), value));
+            	predicates.add(builder.isNull(root.get("closedDate")));
+
             }
 
             if (bungalowId != null) {
                 predicates.add(builder.equal(root.get("bungalowId"), bungalowId));
+            	predicates.add(builder.isNull(root.get("closedDate")));
+
             }
 
             return builder.and(predicates.toArray(new Predicate[0]));
         };
     }
-}
+    
+    public static Specification<Rate> findOverlappingRates(
+            Long bungalowId,
+            LocalDate stayDateFrom,
+            LocalDate stayDateTo,
+            int nights
+    ) {
+        return (root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            predicates.add(criteriaBuilder.equal(root.get("bungalowId"), bungalowId));
+            predicates.add(criteriaBuilder.isNull(root.get("closedDate")));
+            predicates.add(criteriaBuilder.equal(root.get("nights"), nights));
+
+            Predicate stayDateFromOverlaps = criteriaBuilder.and(
+                    criteriaBuilder.lessThanOrEqualTo(root.get("stayDateFrom"), stayDateFrom),
+                    criteriaBuilder.greaterThanOrEqualTo(root.get("stayDateTo"), stayDateFrom)
+            );
+            Predicate stayDateToOverlaps = criteriaBuilder.and(
+                    criteriaBuilder.lessThanOrEqualTo(root.get("stayDateFrom"), stayDateTo),
+                    criteriaBuilder.greaterThanOrEqualTo(root.get("stayDateTo"), stayDateTo)
+            );
+            Predicate stayDateWithinRange = criteriaBuilder.and(
+                    criteriaBuilder.greaterThan(root.get("stayDateFrom"), stayDateFrom),
+                    criteriaBuilder.lessThan(root.get("stayDateTo"), stayDateTo)
+            );
+
+            predicates.add(criteriaBuilder.or(stayDateFromOverlaps, stayDateToOverlaps, stayDateWithinRange));
+
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        };
+    }
+    
+
+        public static Specification<Rate> overlappingRateMerge(
+                Long bungalowId,
+                LocalDate stayDateFrom,
+                LocalDate stayDateTo,
+                int nights,
+                double value
+        ) {
+            return (root, query, criteriaBuilder) -> {
+                List<Predicate> predicates = new ArrayList<>();
+
+                predicates.add(criteriaBuilder.equal(root.get("bungalowId"), bungalowId));
+                predicates.add(criteriaBuilder.isNull(root.get("closedDate")));
+                predicates.add(criteriaBuilder.equal(root.get("nights"), nights));
+
+                Predicate stayDateFromOverlaps = criteriaBuilder.and(
+                        criteriaBuilder.lessThanOrEqualTo(root.get("stayDateFrom"), stayDateFrom),
+                        criteriaBuilder.greaterThanOrEqualTo(root.get("stayDateTo"), stayDateFrom)
+                );
+                Predicate stayDateToOverlaps = criteriaBuilder.and(
+                        criteriaBuilder.lessThanOrEqualTo(root.get("stayDateFrom"), stayDateTo),
+                        criteriaBuilder.greaterThanOrEqualTo(root.get("stayDateTo"), stayDateTo)
+                );
+                Predicate stayDateWithinRange = criteriaBuilder.and(
+                        criteriaBuilder.greaterThan(root.get("stayDateFrom"), stayDateFrom),
+                        criteriaBuilder.lessThan(root.get("stayDateTo"), stayDateTo)
+                );
+                Predicate stayDateToPlusOneDay = criteriaBuilder.equal(root.get("stayDateFrom"), stayDateTo.plusDays(1));
+                Predicate stayDateFromMinusOneDay = criteriaBuilder.equal(root.get("stayDateTo"), stayDateFrom.minusDays(1));
+
+                predicates.add(criteriaBuilder.or(stayDateFromOverlaps, stayDateToOverlaps, stayDateWithinRange,
+                        stayDateToPlusOneDay, stayDateFromMinusOneDay));
+                predicates.add(criteriaBuilder.equal(root.get("value"), value));
+
+                return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+            };
+        }
+    }
