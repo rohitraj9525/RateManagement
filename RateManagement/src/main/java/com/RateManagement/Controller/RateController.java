@@ -1,6 +1,7 @@
 package com.RateManagement.Controller;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 //import java.net.http.HttpHeaders;
 import java.time.LocalDate;
 import java.util.List;
@@ -75,6 +76,7 @@ public class RateController {
     	{
     		return ResponseEntity.badRequest().body("Inavlid Stay Dates. 'stayDateTo and stayDateFrom' cannot be null");
     	}
+
         Rate createdRate = rateService.createRate(rate);
                
         return ResponseEntity.status(HttpStatus.CREATED).body("Rate created succesfully with ID: " +createdRate.getRateId());
@@ -88,7 +90,7 @@ public class RateController {
      * @return update rate
      */
     @PutMapping("/{id}")
-public ResponseEntity<String> updateRate(@PathVariable("id") Long id, @Valid  @RequestBody Rate rate) 
+    public ResponseEntity<String> updateRate(@PathVariable("id") Long id, @Valid  @RequestBody Rate rate) 
     {
     	if(rate.getStayDateFrom()==null||rate.getStayDateTo()==null)
     	{
@@ -98,14 +100,14 @@ public ResponseEntity<String> updateRate(@PathVariable("id") Long id, @Valid  @R
     	{
     		return ResponseEntity.badRequest().body("Invalid stay dates. 'stayDateFrom' must be before or equal to 'stayDateTo");
     	}
-        //Rate updatedRate = rateService.updateRate(id, rate);
-    	Rate updatedRate=rateService.getRateById(id);
+        Rate updatedRate = rateService.updateRate(id, rate);
+    	//Rate updatedRate=rateService.getRateById(id);
     	
         if(updatedRate==null)
         {
         	return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Rate Not Found..please enter correct RateID");
         }
-        return ResponseEntity.ok("Rate updated succesfully with ID: ");
+        return ResponseEntity.ok("Rate updated succesfully with Given ID: " );
     }
 
     /**
@@ -191,7 +193,8 @@ public ResponseEntity<String> updateRate(@PathVariable("id") Long id, @Valid  @R
                 @RequestParam(name = "value",required = false) Double value,
                 @RequestParam(name = "closedDate",required = false) String closedDate
                 
-        ) {
+        )
+        {
             String filename = "rates.xlsx";
             ByteArrayInputStream inputStream = excelService.exportFilteredRates(
                     bungalowId, nights, stayDateFrom, stayDateTo, value, closedDate);
@@ -206,21 +209,31 @@ public ResponseEntity<String> updateRate(@PathVariable("id") Long id, @Valid  @R
         
         
         @PostMapping("/import")
-        public ResponseEntity<String> importRates(@RequestParam("file") MultipartFile file)
-        {
-        	try
-        	{
-        		ExcelService.importRatesFromExcel(file);
-        		return ResponseEntity.status(HttpStatus.OK).body("Rates imported successfully.");
-        	}
-        	catch (Exception e)
-        	{
-        		e.printStackTrace();
-        		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to import rates: " +e.getMessage());
-        	}
-        	
+        public ResponseEntity<String> importRatesFromExcel(@RequestParam("file") MultipartFile file) {
+            if (file == null || file.isEmpty()) {
+                return ResponseEntity.badRequest().body("No file uploaded.");
+            }
+            
+            try {
+                List<Rate> importedRates = excelService.importRatesFromExcel(file);
+                
+                // Convert LocalDate to String for imported rates
+                for (Rate rate : importedRates) {
+                    String stayDateFrom = rate.getStayDateFrom().toString();
+                    String stayDateTo = rate.getStayDateTo().toString();
+                    
+                    // Use the converted string values as needed
+                    // ...
+                }
+                
+                // Additional processing or saving of imported rates
+                // ...
+                
+                return ResponseEntity.ok("Excel file imported successfully.");
+            } catch (IOException e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to import Excel file.");
+            }
         }
-//        
         
         
         

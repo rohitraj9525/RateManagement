@@ -10,43 +10,32 @@ import jakarta.persistence.criteria.Predicate;
 import java.util.*;
 
 public class ExcelSpecification {
-	
-	
+    
+    public static Specification<Rate> filterByCriteria(Long bungalowId, Integer nights, String stayDateFrom,
+            String stayDateTo, Double value, String closedDate) {
+        return (root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
 
+            if (bungalowId != null) {
+                predicates.add(criteriaBuilder.equal(root.get("bungalowId"), bungalowId));
+            }
+            if (nights != null) {
+                predicates.add(criteriaBuilder.equal(root.get("nights"), nights));
+            }
+            if (stayDateFrom != null) {
+                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("stayDateFrom"), LocalDate.parse(stayDateFrom)));
+            }
+            if (stayDateTo != null) {
+                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("stayDateTo"), LocalDate.parse(stayDateTo)));
+            }
+            if (value != null) {
+                predicates.add(criteriaBuilder.equal(root.get("value"), value));
+            }
 
-	    public static Specification<Rate> filterByCriteria(Long bungalowId, Integer nights, String stayDateFrom,
-	            String stayDateTo, Double value, String closedDate) {
-	        return (root, query, criteriaBuilder) -> {
-	            List<Predicate> predicates = new ArrayList<>();
+            // Filter by null closedDate
+            predicates.add(criteriaBuilder.isNull(root.get("closedDate")));
 
-	            if (bungalowId != null) {
-	                predicates.add(criteriaBuilder.equal(root.get("bungalowId"), bungalowId));
-	            	predicates.add(criteriaBuilder.isNull(root.get("closedDate")));
-	            }
-	            if (nights != null) {
-	                predicates.add(criteriaBuilder.equal(root.get("nights"), nights));
-	            	predicates.add(criteriaBuilder.isNull(root.get("closedDate")));
-
-	            }
-	            if (stayDateFrom != null) {
-	                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("stayDateFrom"), LocalDate.parse(stayDateFrom)));
-	            	predicates.add(criteriaBuilder.isNull(root.get("closedDate")));
-
-	            }
-	            if (stayDateTo != null) {
-	                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("stayDateTo"), LocalDate.parse(stayDateTo)));
-	            	predicates.add(criteriaBuilder.isNull(root.get("closedDate")));
-
-	            }
-	            if (value != null) {
-	                predicates.add(criteriaBuilder.equal(root.get("value"), value));
-	            	predicates.add(criteriaBuilder.isNull(root.get("closedDate")));
-
-	            }
-
-	            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
-	            
-	        };
-	        
-	    }
-	}
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        };
+    }
+}

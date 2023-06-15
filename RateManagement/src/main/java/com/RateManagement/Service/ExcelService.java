@@ -50,23 +50,7 @@ public class ExcelService
     	    return DownloadHelper.rateToExcel(filteredRates);
     	}	  
 	  
-	  public static void importRatesFromExcel(MultipartFile file)
-	  {
-		  try {
-	            // Check if the file has Excel format
-	            if (UploadHelper.hasExcelFormat(file)) {
-	                InputStream is = file.getInputStream();
-
-	                // Convert Excel data to Rate objects
-	                List<Rate> rates = UploadHelper.excelToRate(is);
-
-	                // Save the rates to the repository
-	                repository.saveAll(rates);
-	            } else {
-	                throw new RuntimeException("Invalid file format. Only Excel files are supported.");
-	            }
-	        } catch (IOException e) {
-	            throw new RuntimeException("Failed to import rates from excel: " + e.getMessage());
-	        }
-	    }
-	}
+      public List<Rate> importRatesFromExcel(MultipartFile file) throws IOException {
+          List<Rate> rates = UploadHelper.excelToRates(file.getInputStream());
+          return repository.saveAll(rates);
+      }     }

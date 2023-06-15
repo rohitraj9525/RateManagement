@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 
-
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -71,7 +71,15 @@ public class RestExceptionHandler
     public ResponseEntity<String> handleNullPointerException(NullPointerException ex) {
         // Handle the exception and return an error response
 		ex.printStackTrace();
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Please do not enter null value");
+    }
+	
+	@ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<String> handleEntityNotFoundException(EntityNotFoundException ex) {
+        // Create error response
+         ex.printStackTrace();
+        // Return the error response with appropriate HTTP status
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Rate not found with this ID");
     }
 	
 	
