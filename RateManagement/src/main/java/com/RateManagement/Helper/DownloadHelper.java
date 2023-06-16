@@ -41,7 +41,7 @@ public class DownloadHelper {
                 row.createCell(2).setCellValue(rate.getNights());
                 row.createCell(3).setCellValue(rate.getValue());
                 row.createCell(4).setCellValue(rate.getBungalowId());
-                row.createCell(5).setCellValue(rate.getClosedDate() != null ? rate.getClosedDate().toString() : " ");
+                row.createCell(5).setCellValue(rate.getClosedDate() != null ? rate.getClosedDate().toString() : "");
             }
 
             workbook.write(out);

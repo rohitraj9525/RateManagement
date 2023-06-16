@@ -2,19 +2,15 @@ package com.RateManagement.Entity;
 
 import java.time.LocalDate;
 
-import org.antlr.v4.runtime.misc.NotNull;
+import org.hibernate.validator.constraints.Range;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.NotNull;
 
 
 /**
@@ -36,19 +32,23 @@ public class Rate
 	
 	//@NotBlank(message="Stay date form is required")
 	@Column(name = "stay_date_from")
+	@NotNull(message = "Please enter correct stay date from ")
     private LocalDate stayDateFrom;
 
 	//@NotBlank(message="Stay date to is required ")
     @Column(name = "stay_date_to")
+	@NotNull(message = "Please enter correct stay date To ")
     private LocalDate stayDateTo;
 
 	//@NotBlank(message="number of night is required")
     @Column(name = "nights")
+    @Range(message = "please enter correct nights value")
     private int nights;
 
 	//@NotBlank(message="value is required")
 	//@Size(min=0,message="value should be in positive")
     @Column(name = "value")
+    @Range(message = "please enter correct price value")
     private double value;
     
     @Column(name="bungalowId")

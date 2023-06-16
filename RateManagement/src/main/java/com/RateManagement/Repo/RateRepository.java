@@ -73,7 +73,9 @@ public interface RateRepository extends JpaRepository<Rate, Long>,JpaSpecificati
 
 	    @Query(value = "SELECT r FROM Rate r WHERE r.stayDateFrom = :stayDateFrom " +
 	            "AND r.stayDateTo = :stayDateTo AND r.nights = :nights " +
-	            "AND r.value = :value AND r.bungalowId = :bungalowId "
+	            "AND r.value = :value AND r.bungalowId = :bungalowId " +
+	            "AND r.closedDate IS NULL"
+	            
 	            )
 	    Rate findByFields(@Param("stayDateFrom") LocalDate stayDateFrom,
 	                      @Param("stayDateTo") LocalDate stayDateTo,

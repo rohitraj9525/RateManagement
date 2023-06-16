@@ -15,6 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -31,6 +32,7 @@ import com.RateManagement.Service.RateService;
 import org.springframework.http.HttpHeaders;
 
 import jakarta.annotation.Resource;
+import jakarta.servlet.Filter;
 import jakarta.validation.Valid;
 
 //
@@ -46,7 +48,7 @@ public class RateController {
 
 	@Autowired
     private final RateService rateService;
-    @Autowired
+	@Autowired
     private final ExcelService excelService;
 
 
@@ -205,7 +207,27 @@ public class RateController {
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
                     .contentType(MediaType.parseMediaType("application/vnd.ms-excel"))
                     .body(file);
-        }        
+        }    
+        
+//        @GetMapping("/download")
+//        public ResponseEntity<InputStreamResource> exportFilteredRates(@ModelAttribute Filter filterParams) {
+//            String filename = "rates.xlsx";
+//            ByteArrayInputStream inputStream = excelService.exportFilteredRates(
+//                    ((Rate) filterParams).getBungalowId(),
+//                    ((Rate) filterParams).getNights(),
+//                    ((Rate) filterParams).getStayDateFrom().toString(),
+//                    ((Rate) filterParams).getStayDateTo().toString(),
+//                    ((Rate) filterParams).getValue(),
+//                    ((Rate) filterParams).getClosedDate().toString()
+//            );
+//
+//            InputStreamResource file = new InputStreamResource(inputStream);
+//
+//            return ResponseEntity.ok()
+//                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
+//                    .contentType(MediaType.parseMediaType("application/vnd.ms-excel"))
+//                    .body(file);
+//        }
         
         
         @PostMapping("/import")
@@ -234,6 +256,8 @@ public class RateController {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to import Excel file.");
             }
         }
+        
+        
         
         
         

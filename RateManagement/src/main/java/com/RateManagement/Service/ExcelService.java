@@ -22,6 +22,9 @@ import com.RateManagement.Specification.ExcelSpecification;
 public class ExcelService 
 {
 	private static RateRepository repository;
+	
+	@Autowired 
+	private RateService rateService;
 	  
       @Autowired
 	  public ExcelService(RateRepository repository)
@@ -52,5 +55,6 @@ public class ExcelService
 	  
       public List<Rate> importRatesFromExcel(MultipartFile file) throws IOException {
           List<Rate> rates = UploadHelper.excelToRates(file.getInputStream());
-          return repository.saveAll(rates);
+          rates.stream().forEach((rate)->{rateService.createRate(rate);});
+          return rates;
       }     }

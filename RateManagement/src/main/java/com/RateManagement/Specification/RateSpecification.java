@@ -90,8 +90,11 @@ public class RateSpecification {
                     criteriaBuilder.greaterThan(root.get("stayDateFrom"), stayDateFrom),
                     criteriaBuilder.lessThan(root.get("stayDateTo"), stayDateTo)
             );
+            Predicate stayDateToPlusOneDay = criteriaBuilder.equal(root.get("stayDateFrom"), stayDateTo.plusDays(1));
+            Predicate stayDateFromMinusOneDay = criteriaBuilder.equal(root.get("stayDateTo"), stayDateFrom.minusDays(1));
 
-            predicates.add(criteriaBuilder.or(stayDateFromOverlaps, stayDateToOverlaps, stayDateWithinRange));
+
+            predicates.add(criteriaBuilder.or(stayDateFromOverlaps, stayDateToOverlaps, stayDateWithinRange,stayDateToPlusOneDay,stayDateFromMinusOneDay));
 
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
