@@ -94,6 +94,7 @@ public class RateServiceImpl implements RateService {
 
          if (overlappingRates.isEmpty()) 
            {
+        	         	 
                return rateRepository.save(rate);
            } 
            
@@ -516,6 +517,14 @@ public class RateServiceImpl implements RateService {
                 	splitUpdate(existingRate, overlappingRates);
                     
                     overlappingRateMerge = rateRepository.findAll(RateSpecification.overlappingRateMerge(update.getBungalowId(), update.getStayDateFrom(), update.getStayDateTo(), update.getNights(), update.getValue()));
+                    
+//                    existingRate.setStayDateFrom(update.getStayDateFrom());
+//                    existingRate.setStayDateTo(update.getStayDateTo());
+//                    existingRate.setNights(update.getNights());
+//                    existingRate.setValue(update.getValue());
+//                    existingRate.setBungalowId(update.getBungalowId());
+//                    existingRate.setClosedDate(null);
+                    
                     mergeUpdate(existingRate, overlappingRateMerge);
                     return update;
 
@@ -568,9 +577,20 @@ public class RateServiceImpl implements RateService {
   				  {
   					  //rate.setClosedDate(LocalDate.now());
   					  
-  					  rateRepository.save(rate);
   					  Rate rateAfter=new Rate(rate.getStayDateFrom(),existingRate.getStayDateTo(),rate.getNights(),rate.getValue(),rate.getBungalowId());
-  					  rate = rateRepository.save(rateAfter);
+  					  
+  					  //rate = rateRepository.save(rateAfter);
+  					 //rate.setStayDateFrom(existingRate.getStayDateFrom());
+  					  if(rate.getStayDateTo().isBefore(existingRate.getStayDateTo()))
+  					  {
+  						  rate.setStayDateTo(existingRate.getStayDateTo());
+  					  rateRepository.save(rate);
+  					  }
+  					  else
+  					  {
+  						  rateRepository.save(rate);
+  					  }
+
   					  System.out.println("CASE01 of merging else part ");
 
   				  }				  
@@ -591,13 +611,17 @@ public class RateServiceImpl implements RateService {
   				  else {
   					  //rate.setClosedDate(LocalDate.now());
   					  
-  					  rateRepository.save(rate);
   					  Rate rateAfter=new Rate(existingRate.getStayDateFrom(),rate.getStayDateTo(),rate.getNights(),rate.getValue(),rate.getBungalowId());
-  					  rate = rateRepository.save(rateAfter);
+  					  //rate = rateRepository.save(rateAfter);
+  					  rate.setStayDateFrom(existingRate.getStayDateFrom());
+  					  rateRepository.save(rate);
+
   					  System.out.println("CASE02 of merging else part ");
 
   				  }      		
   			  }
+  			 
+  			  
   			  
   			  //CASE03:-- 
   	    }

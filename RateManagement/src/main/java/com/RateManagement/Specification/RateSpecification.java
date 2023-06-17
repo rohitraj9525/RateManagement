@@ -31,7 +31,6 @@ public class RateSpecification {
             }
 
             if (stayDateFrom != null) {
-            	//if(closedDate!=LocalDate.now())
             		
                 predicates.add(builder.greaterThanOrEqualTo(root.get("stayDateFrom"), stayDateFrom));
             	predicates.add(builder.isNull(root.get("closedDate")));
@@ -137,4 +136,9 @@ public class RateSpecification {
                 return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
             };
         }
+        
+        
+               
+        
+        
     }

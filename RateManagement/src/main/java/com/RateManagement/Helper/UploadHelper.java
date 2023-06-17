@@ -8,7 +8,6 @@ import com.RateManagement.Entity.Rate;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -35,7 +34,6 @@ public class UploadHelper {
             
             
             Cell stayDateFromCell = row.getCell(0);
-            String stayDateFromValue = stayDateFromCell.getStringCellValue().trim();
             LocalDate stayDateFrom = LocalDate.parse(stayDateFromCell.getStringCellValue());
             rate.setStayDateFrom(stayDateFrom);
             

@@ -21,13 +21,10 @@ import com.RateManagement.Repo.RateRepository;
 import com.RateManagement.Service.RateService;
 import java.util.*;
 @SpringBootTest
-public class RateManagementApplicationTests {
+public class RateManagementApplicationTests 
+{
 
-    @Mock
-    private RateRepository rateRepository;
-
-    @InjectMocks
-    private RateService rateService;
+    
 
     
 }

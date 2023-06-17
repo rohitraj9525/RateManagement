@@ -1,7 +1,6 @@
 package com.RateManagement.Repo;
 
 
-import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -34,9 +33,11 @@ public interface RateRepository extends JpaRepository<Rate, Long>,JpaSpecificati
 		    
 		    List<Rate> findAll(Specification<Rate> specification);
 		    
-		   
-
-	    	    
+		    
+		    //calaculateprice
+		    
+		    		    
+		    	    	    
 //	    @Query(value = "SELECT r FROM Rate r " +
 //	            "WHERE r.bungalowId = :bungalowId " +
 //	    		"AND r.closedDate IS NULL" + " AND r.nights= :nights " +
@@ -67,7 +68,19 @@ public interface RateRepository extends JpaRepository<Rate, Long>,JpaSpecificati
 //	                                                 @Param("nights") int nights,
 //	                                                 @Param("value") double value);
 //	                                     
-//	                                     
+//	      
+		    
+		    @Query("SELECT r FROM Rate r " +
+		            "WHERE r.bungalowId = :bungalowId " +
+		            "AND r.closedDate IS NULL " +
+		            "AND r.nights = :nights " +
+		            "AND r.stayDateFrom > :endDate " +
+		            "AND r.stayDateTo >= :startDate " +
+		            "ORDER BY r.stayDateFrom ASC")
+		     Rate findNextRate(@Param("bungalowId") Long bungalowId,
+		                       @Param("startDate") LocalDate startDate,
+		                       @Param("endDate") LocalDate endDate,
+		                       @Param("nights") int nights);
 	    
 	    
 
