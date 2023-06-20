@@ -94,6 +94,14 @@ public class BungalowServiceImpl implements BungalowService {
 
         bungalowRepository.delete(existingBungalow);
     }
+
+	@Override
+	public Optional<Bungalow> findById(long id) {
+		// TODO Auto-generated method stub
+		return bungalowRepository.findById(id);
+	}
+    
+    
 }
 
 

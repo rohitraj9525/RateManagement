@@ -138,7 +138,45 @@ public class RateSpecification {
         }
         
         
-               
+        public static Specification<Rate> findOverlappingCalculate(
+                Long bungalowId,
+                LocalDate startDate,
+                LocalDate endDate
+                )
+
+        {
+        	return (root, query, criteriaBuilder) -> {
+                List<Predicate> predicates = new ArrayList<>();
+                
+                 Predicate bungalowIdEqual = criteriaBuilder.equal(root.get("bungalowId"), bungalowId);
+                
+                Predicate startDateOverlaps = criteriaBuilder.and(
+                        criteriaBuilder.lessThanOrEqualTo(root.get("stayDateFrom"), startDate),
+                        criteriaBuilder.greaterThanOrEqualTo(root.get("stayDateTo"), startDate)
+                );
+                
+                Predicate endDateOverlaps = criteriaBuilder.and(
+                        criteriaBuilder.lessThanOrEqualTo(root.get("stayDateFrom"), endDate),
+                        criteriaBuilder.greaterThanOrEqualTo(root.get("stayDateTo"), endDate)
+                );
+                
+                Predicate overlaps = criteriaBuilder.and(
+                        criteriaBuilder.lessThanOrEqualTo(root.get("stayDateFrom"), startDate),
+                        criteriaBuilder.greaterThanOrEqualTo(root.get("stayDateTo"), endDate)
+                );
+                
+                Predicate consecutivelaps = criteriaBuilder.and(
+                        criteriaBuilder.greaterThanOrEqualTo(root.get("stayDateFrom"), startDate),
+                        criteriaBuilder.lessThanOrEqualTo(root.get("stayDateTo"), endDate)
+                );
+                
+                predicates.add(criteriaBuilder.and(
+                		bungalowIdEqual, 
+                		criteriaBuilder.or(startDateOverlaps,endDateOverlaps,overlaps,consecutivelaps)
+                		));
+                predicates.add(criteriaBuilder.isNull(root.get("closedDate")));
+                        return criteriaBuilder.and(predicates.toArray(new Predicate[0]));                  };
+        }
         
         
     }

@@ -7,12 +7,12 @@ public class BookingFilter
 	private LocalDate startDate;
 	private LocalDate endDate;
 	private long bungalowId;
-	private int nights;
+	//private int nights;
 	private LocalDate closedDate;
 	@Override
 	public String toString() {
 		return "BookingFilter [startDate=" + startDate + ", endDate=" + endDate + ", bungalowId=" + bungalowId
-				+ ", nights=" + nights + "]";
+				+ "]";
 	}
 	public LocalDate getStartDate() {
 		return startDate;
@@ -32,12 +32,7 @@ public class BookingFilter
 	public void setBungalowId(long bungalowId) {
 		this.bungalowId = bungalowId;
 	}
-	public int getNights() {
-		return nights;
-	}
-	public void setNights(int nights) {
-		this.nights = nights;
-	}
+	
 	public LocalDate getClosedDate() {
 		return closedDate;
 	}
@@ -53,7 +48,7 @@ public class BookingFilter
 		this.startDate = startDate;
 		this.endDate = endDate;
 		this.bungalowId = bungalowId;
-		this.nights = nights;
+		
 		//this.closedDate = closedDate;
 	}
 	

@@ -5,6 +5,7 @@ import java.io.IOException;
 //import java.net.http.HttpHeaders;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -166,8 +167,36 @@ public class RateController {
 //            return ResponseEntity.ok(rates.getContent());
         
      
-        @GetMapping
+        @GetMapping("/filter")
         public Page<Rate> getAllRates(Pageable pageable,
+                                                      @RequestParam Map<String, String> filter)
+        {
+        	for(Map.Entry<String, String> etry : filter.entrySet()) {
+        		System.out.println(etry.getKey());
+        		System.out.println(etry.getValue());
+        		
+        	}
+        	
+        	
+        	Long id = filter.get("id") != null ? Long.parseLong(filter.get("id")) : null;
+        	Double value = filter.get("value") != null ? Double.parseDouble(filter.get("value")) : null;
+        	Integer nights = filter.get("nights") !=null? Integer.parseInt(filter.get("nights")): null;
+        	LocalDate stayDateFrom = filter.get("stayDateFrom") !=null ? LocalDate.parse(filter.get("stayDateFrom")) : null;
+        	LocalDate stayDateTo = filter.get("stayDateTo") !=null ? LocalDate.parse(filter.get("stayDateTo")) :null;
+        	Long bungalowId = filter.get("bungalowId") != null ? Long.parseLong(filter.get("bungalowId")) : null;
+        	LocalDate closedDate = filter.get("closedDate") != null ? LocalDate.parse(filter.get("closedDate")): null;
+        	
+        	System.out.println(value);
+        	System.out.println(nights);
+
+        	System.out.println(pageable);
+
+        	
+           return rateService.getAllRates(pageable, id, stayDateFrom, stayDateTo, nights, value, bungalowId, closedDate);
+        }
+        
+        @GetMapping
+        public Page<Rate> getAllRatesFilter(Pageable pageable,
                                                       @RequestParam(required = false) Long id,
                                                       @RequestParam(required = false) LocalDate stayDateFrom,
                                                       @RequestParam(required = false) LocalDate stayDateTo,
@@ -176,27 +205,24 @@ public class RateController {
                                                       @RequestParam(required = false) Long bungalowId,
                                                       @RequestParam(required=false) LocalDate closedDate)
         {
-//            Page<Rate> rates = rateService.getAllRates(pageable, id, stayDateFrom, stayDateTo,
-//                    nights, value, bungalowId,closedDate);
             return rateService.getAllRates(pageable, id, stayDateFrom, stayDateTo, nights, value, bungalowId, closedDate);
         }
         
         //Download
         
-        //private final FileService fileService1;
-        
-        
-        @GetMapping("/download")
-        public ResponseEntity<InputStreamResource> getFile(
-                @RequestParam(name = "bungalowId",required = false) Long bungalowId,
-                @RequestParam(name = "nights",required = false) Integer nights,
-                @RequestParam(name = "stayDateFrom",required = false) String stayDateFrom,
-                @RequestParam(name = "stayDateTo",required = false) String stayDateTo,
-                @RequestParam(name = "value",required = false) Double value,
-                @RequestParam(name = "closedDate",required = false) String closedDate
-                
-        )
+        @GetMapping("/filters")
+        public ResponseEntity<InputStreamResource> getFile(@RequestParam Map<String, String> filter)
         {
+        		//Long id = filter.get("id") != null ? Long.parseLong(filter.get("id")) : null;
+            	Double value = filter.get("value") != null ? Double.parseDouble(filter.get("value")) : null;
+            	Integer nights = filter.get("nights") !=null? Integer.parseInt(filter.get("nights")): null;
+            	String stayDateFrom = filter.get("stayDateFrom") !=null ? (filter.get("stayDateFrom")) : null;
+            	String stayDateTo = filter.get("stayDateTo") !=null ? (filter.get("stayDateTo")) :null;
+            	Long bungalowId = filter.get("bungalowId") != null ? Long.parseLong(filter.get("bungalowId")) : null;
+            	String closedDate = filter.get("closedDate") != null ? (filter.get("closedDate")): null;
+                
+        
+        
             String filename = "rates.xlsx";
             ByteArrayInputStream inputStream = excelService.exportFilteredRates(
                     bungalowId, nights, stayDateFrom, stayDateTo, value, closedDate);
@@ -207,7 +233,34 @@ public class RateController {
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
                     .contentType(MediaType.parseMediaType("application/vnd.ms-excel"))
                     .body(file);
-        }    
+        
+        }
+        
+        //private final FileService fileService1;
+        
+        
+//        @GetMapping("/download")
+//        public ResponseEntity<InputStreamResource> getFile(
+//                @RequestParam(name = "bungalowId",required = false) Long bungalowId,
+//                @RequestParam(name = "nights",required = false) Integer nights,
+//                @RequestParam(name = "stayDateFrom",required = false) String stayDateFrom,
+//                @RequestParam(name = "stayDateTo",required = false) String stayDateTo,
+//                @RequestParam(name = "value",required = false) Double value,
+//                @RequestParam(name = "closedDate",required = false) String closedDate
+//                
+//        )
+//        {
+//            String filename = "rates.xlsx";
+//            ByteArrayInputStream inputStream = excelService.exportFilteredRates(
+//                    bungalowId, nights, stayDateFrom, stayDateTo, value, closedDate);
+//
+//            InputStreamResource file = new InputStreamResource(inputStream);
+//
+//            return ResponseEntity.ok()
+//                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
+//                    .contentType(MediaType.parseMediaType("application/vnd.ms-excel"))
+//                    .body(file);
+//        }    
         
 //        @GetMapping("/download")
 //        public ResponseEntity<InputStreamResource> exportFilteredRates(@ModelAttribute Filter filterParams) {

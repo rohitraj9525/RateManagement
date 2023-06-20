@@ -47,6 +47,16 @@ public class RateServiceImpl implements RateService {
 	@Autowired
 	private BungalowService bungalowService;
 	
+	//changes
+	
+	public RateServiceImpl(RateRepository rateRepository, BungalowService bungalowService) {
+		super();
+		this.rateRepository = rateRepository;
+		this.bungalowService = bungalowService;
+	}
+	
+	//................
+
 	@Autowired
     public RateServiceImpl(RateRepository rateRepository) {
         this.rateRepository = rateRepository;

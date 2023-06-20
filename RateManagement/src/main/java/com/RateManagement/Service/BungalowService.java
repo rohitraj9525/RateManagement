@@ -1,6 +1,7 @@
 package com.RateManagement.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,4 +20,6 @@ public interface BungalowService
     Bungalow createBungalow(Bungalow bungalow);
     Bungalow updateBungalow(Long id, Bungalow bungalow);
     void deleteBungalow(Long id);
+    
+    Optional<Bungalow> findById(long id);
 }

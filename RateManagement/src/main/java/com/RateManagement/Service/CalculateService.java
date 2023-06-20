@@ -5,6 +5,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.RateManagement.Entity.BookingFilter;
@@ -28,8 +29,10 @@ public class CalculateService
 	{
 		
 		
-        List<Rate> calculateOverlap = Repository.findAll(RateSpecification.findOverlappingRates(bookingFilter.getBungalowId(),  bookingFilter.getStartDate(), bookingFilter.getEndDate(), bookingFilter.getNights()));
+        List<Rate> calculateOverlap = Repository.findAll(RateSpecification.findOverlappingCalculate(bookingFilter.getBungalowId(),  bookingFilter.getStartDate(), bookingFilter.getEndDate()),
+        		Sort.by("stayDateFrom"));
 
+        System.out.println(calculateOverlap);
         if(calculateOverlap.isEmpty())
         {
         	throw new IllegalArgumentException("No rates available for the specified booking details");
@@ -93,16 +96,28 @@ public class CalculateService
   	        	LocalDate newStartDate = bookingFilter.getStartDate();
   	        	LocalDate newEndDate = bookingFilter.getEndDate();
   	        	long newNoOfDays = calculateStayDuration(newStartDate, newEndDate);
-  	        	totalValue+=(newNoOfDays*existingRate.getValue())*1/2;
+  	        	//totalValue=(newNoOfDays)*existingRate.getValue();
   	        	//calculate the remaing days with the next rate
+  	        	
+  	        	//System.out.println(totalValue+" "+newNoOfDays);
   	        	
   	        	LocalDate nextRateStartDate = existingRate.getStayDateTo().plusDays(1);
   	        	LocalDate nextRateEndDate = bookingFilter.getEndDate();
   	        	long remainingNoDays = calculateStayDuration(nextRateStartDate, nextRateEndDate);
-  	        	totalValue+=(remainingNoDays*getNextRateValue(bookingFilter.getBungalowId(), nextRateStartDate, nextRateEndDate, bookingFilter.getNights()))*1/2;
+  	        	long daysLeft= (remainingNoDays);
+  	        	//totalValue+=(remainingNoDays*getNextRateValue(bookingFilter.getBungalowId(), nextRateStartDate, nextRateEndDate, bookingFilter.getNights()));
+  	        	
+  	        	totalValue= (((newNoOfDays-daysLeft)*existingRate.getValue()) + (daysLeft*getNextRateValue(bookingFilter.getBungalowId(),nextRateStartDate,nextRateEndDate,0)));
+  	        	System.out.println(totalValue+" "+remainingNoDays);
   	        	
   	        	
   	        	System.out.println("CASE05");
+  	        	
+  	        	//Pull all records for given bungalow Id in ascending order of stayFromDate
+  	        	//Iterate records till you find given startDate in any of refcord in pulled list
+  	        	//calculate amount 
+  	        	//iterate list again till you find end date
+  	        	
   	        	
   	        }
   	        
@@ -112,13 +127,13 @@ public class CalculateService
 	        	LocalDate newStartDate = bookingFilter.getStartDate();
 	        	LocalDate newEndDate = bookingFilter.getEndDate();
 	        	long newNoOfDays = calculateStayDuration(newStartDate, newEndDate);
-	        	totalValue+=newNoOfDays*existingRate.getValue()*1/2;
+	        	totalValue+=newNoOfDays*existingRate.getValue();
 	        	//calculate the remaing days with the next rate
 	        	
 	        	LocalDate nextRateStartDate = existingRate.getStayDateTo().plusDays(1);
 	        	LocalDate nextRateEndDate = bookingFilter.getEndDate();
 	        	long remainingNoDays = calculateStayDuration(nextRateStartDate, nextRateEndDate);
-	        	totalValue+=remainingNoDays*getNextRateValue(bookingFilter.getBungalowId(), nextRateStartDate, nextRateEndDate, bookingFilter.getNights())*1/2;
+	        	totalValue+=remainingNoDays*getNextRateValue(bookingFilter.getBungalowId(), nextRateStartDate, nextRateEndDate, 0);
   	        	System.out.println("CASE06");  	
 	        }
 	        	//CASE07:
@@ -127,7 +142,7 @@ public class CalculateService
           else if (bookingFilter.getStartDate().isEqual(existingRate.getStayDateFrom())
                   && bookingFilter.getEndDate().isAfter(existingRate.getStayDateTo())) {
               Rate nextRate = Repository.findNextRate(bookingFilter.getBungalowId(), existingRate.getStayDateTo(),
-                      bookingFilter.getEndDate(), bookingFilter.getNights());
+                      bookingFilter.getEndDate(), 0);
               if (nextRate != null) {
                   long daysUntilNextRate = calculateStayDuration(existingRate.getStayDateTo(), nextRate.getStayDateFrom());
                   totalValue = (noOfDays - daysUntilNextRate) * existingRate.getValue()
