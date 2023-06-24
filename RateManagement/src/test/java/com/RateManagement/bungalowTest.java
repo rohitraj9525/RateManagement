@@ -47,6 +47,9 @@ public class bungalowTest
 	
 	//testing for create
 	
+	/**
+	 * JUNIT testing for createBungalow
+	 */
 	@Test
 	public void createBungalow()
 	{
@@ -65,6 +68,9 @@ public class bungalowTest
 	
 	//testing for update
 	
+	/**
+	 * JUNIT testing for update bungalow
+	 */
 	@Test
 	public void updateBungalow()
 	{
@@ -84,6 +90,9 @@ public class bungalowTest
 	
 	//delete the bungalowobject by its id
 	
+	/**
+	 * JUNIT testing for delete bungalow
+	 */
 	@Test
 	public void deleteBungalow()
 	{
@@ -98,6 +107,9 @@ public class bungalowTest
 	
 	//get bungalow by its id
 	
+	/**
+	 * JUNIT testing for get bungalow by id
+	 */
 	@Test
 	public void getBungalowById()
 	{

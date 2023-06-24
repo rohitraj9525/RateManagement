@@ -1,6 +1,7 @@
 package com.RateManagement.Entity;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 import org.hibernate.validator.constraints.Range;
 
@@ -10,6 +11,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotNull;
 
 
@@ -31,6 +33,7 @@ public class Rate
 	private Long rateId;
 	
 	//@NotBlank(message="Stay date form is required")
+	//@FutureOrPresent
 	@Column(name = "stay_date_from")
 	@NotNull(message = "Please enter correct stay date from ")
     private LocalDate stayDateFrom;
@@ -249,7 +252,32 @@ public class Rate
 		return "Rate [rateId=" + rateId + ", stayDateFrom=" + stayDateFrom + ", stayDateTo=" + stayDateTo + ", nights="
 				+ nights + ", value=" + value + ", bungalowId=" + bungalowId + ", closedDate=" + closedDate + "]";
 	}
-    
+
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(bungalowId, closedDate, nights, stayDateFrom, stayDateTo, value);
+	}
+
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Rate other = (Rate) obj;
+		return Objects.equals(bungalowId, other.bungalowId) && Objects.equals(closedDate, other.closedDate)
+				&& nights == other.nights && Objects.equals(stayDateFrom, other.stayDateFrom)
+				&& Objects.equals(stayDateTo, other.stayDateTo)
+				&& Double.doubleToLongBits(value) == Double.doubleToLongBits(other.value);
+	}
+
+
+	
+	    
     //Getter and Setter method
 	
     

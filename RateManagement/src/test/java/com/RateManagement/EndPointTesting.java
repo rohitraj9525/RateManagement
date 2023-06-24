@@ -40,105 +40,7 @@ import static org.mockito.Mockito.*;
 import com.RateManagement.Controller.RateController;
 import com.RateManagement.Entity.*;
 
-//@SpringBootTest
-//public class EndPointTesting 
-// {
-//
-//    @Autowired
-//    private MockMvc mockMvc;
-//
-//    @MockBean
-//    private RateService rateService;
-//    
-//    @InjectMocks
-//    private RateController rateController;
-//    
-//    Rate rate=new Rate();
-//    
-//    @BeforeEach
-//    public void setUp()
-//    {
-//    	LocalDate s= LocalDate.of(2023, 1, 1);
-//        LocalDate q = LocalDate.of(2023, 5, 10);
-//        rate.setRateId((long) 1);
-//        rate.setValue(100.0);
-//        rate.setNights(7);
-//        rate.setStayDateFrom(s);
-//        rate.setStayDateTo(q);
-//        rate.setClosedDate(null);
-//        rate.setBungalowId((long) 1);
-//        
-//
-//    }
-//    
-//    @AfterEach
-//    public void tearDown()
-//    {
-//    	reset(rateService);
-//    }
-//    
-//
-//    @Test
-//    @DisplayName("createRate method")
-//    public void testCreateRate() throws Exception {
-//                String rateJson = objectMapper.writeValueAsString(rate);
-//
-//        // Mock the behavior of the rateService.createRate() method
-//        Rate createdRate = new Rate();
-//        createdRate.setRateId((long) 1);
-//        when(rateService.createRate(any(Rate.class))).thenReturn(createdRate);
-//
-//        // Perform the POST request to the createRate endpoint
-//        mockMvc.perform(post("/api/rates")
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content(rateJson))
-//                .andExpect(status().isCreated())
-//                .andExpect(content().string("Rate created successfully with ID: " + createdRate.getRateId()));
-//
-//        // Verify the result
-//        verify(rateService, times(1)).createRate(any(Rate.class));
-//    }
-//    
-//    
-//    //getRateById
-//    @Test
-//    @DisplayName("RateById method")
-//    public void testGetRateById() throws Exception
-//    {
-//    	mockMvc.perform(get("api/v1/rates" + rate.getRateId().toString()))
-//    			.andExcept(status().isOk())
-//    			.andExpect(jsonPath())
-//    	
-//    	
-//    }
-//    
-//    
-//   public void testDeleteRate() throws Exception
-//   {
-//
-//	   rate.setRateId((long) 1);
-//	   LocalDate s= LocalDate.of(2023, 1, 1);
-//       LocalDate q = LocalDate.of(2023, 5, 10);
-//       rate.setRateId((long) 1);
-//       rate.setValue(100.0);
-//       rate.setNights(7);
-//       rate.setStayDateFrom(s);
-//       rate.setStayDateTo(q);
-//       rate.setClosedDate(null);
-//       rate.setBungalowId((long) 1);
-//	   
-//
-//       given(rateService.deleteRate(rate.getRateId())).thenReturn(rate);
-//       
-//       
-//       
-//       
-//   }
-//    
-//    
-//    
-//    
-//}
+
 
 @AutoConfigureMockMvc
 @SpringBootTest	
@@ -154,6 +56,10 @@ public class EndPointTesting
     	private ObjectMapper objectMapper;
     	
     	
+    	/**
+    	 * @throws Exception  
+    	 * JUNIT testing for createRate
+    	 */
     	@Test
     	public void TestCreateRate() throws Exception
     	{
@@ -197,6 +103,10 @@ public class EndPointTesting
     	
     	
     // JUnit Testing for the UPDATERATE	
+    	/**
+    	 * @throws Exception
+    	 * JUNIT testing for updateRate
+    	 */
     	@Test
     	public void TestUpdateRate() throws Exception
     	{
@@ -231,6 +141,9 @@ public class EndPointTesting
     	
     	//juNIT TESTING FOR THE DELETERATE
     	
+    	/**
+    	 * JUNIT testing for delete rate
+    	 */
     	@Test
     	public void TestDeleteRate()
     	{
@@ -269,6 +182,9 @@ public class EndPointTesting
     	
     	//JUnit testing for the GetRateById
     	
+    	/**
+    	 * JUNIT testing for getratebyid
+    	 */
     	@Test
     	public void TestRateById()
     	{
@@ -303,6 +219,9 @@ public class EndPointTesting
     	
     	
     	//JUNIT Test for Get All Rates 
+    	/**
+    	 * JUNIT testing for get all rates
+    	 */
     	@Test
     	public void TestGetAllRates()
     	{

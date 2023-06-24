@@ -84,6 +84,9 @@ public class ServiceUnitTest {
 
     //J-Unit testing for the create rate
 
+    /**
+     * JUNIT testing for create rate
+     */
     @Test
     @DisplayName("Test createRate method")
     public void testCreateRate() {
@@ -97,6 +100,9 @@ public class ServiceUnitTest {
     
     
     //J-Unit testing for the delete rate
+    /**
+     * JUNIT testing for delete rate
+     */
     @Test
     @DisplayName("deleteRate method")
     public void testdeleteRate()
@@ -113,6 +119,9 @@ public class ServiceUnitTest {
     
     //J-Unit testing for he update rate
     
+    /**
+     * JUNIT testing for update rate
+     */
     @Test
     @DisplayName("updateRate method")
     public void testupdateRate()
@@ -134,6 +143,9 @@ public class ServiceUnitTest {
     }
     
     //Test for get rate by id
+    /**
+     * JUNIT testing for get rate by id
+     */
     @Test
     @DisplayName("getRateById method")
     public void testgetRateById()
@@ -154,6 +166,10 @@ public class ServiceUnitTest {
     
     //Test for get All Rates
     
+    /**
+     * @throws Exception
+     * JUNIT testing for get all rates
+     */
     @Test
     @DisplayName("getAllRates method")
     public void testGetAllRates() throws Exception
@@ -184,6 +200,9 @@ public class ServiceUnitTest {
     
     //Test for get All Rates by values and nights
     
+    /**
+     * JUNIT testing for get all rates by nights and value
+     */
     @Test
     @DisplayName("getRateByValuesAndNights methods")
     public void testGetAllRatesByNightsAndValue()
@@ -211,6 +230,9 @@ public class ServiceUnitTest {
     }
     
     // j-UNIT testing get rate by bungalowId
+    /**
+     * JUNIT testing for rate by bungalow id
+     */
     @Test
     @DisplayName("getRateByBungalowId method")
     public void testRateByBungalowId()
@@ -239,6 +261,9 @@ public class ServiceUnitTest {
     }
     
     //J-Unit Testing for to get rate by stayDateFrom and stayDateEnd
+    /**
+     * JUNIT testing for get rate by dates
+     */
     @Test
     @DisplayName("getRateByDates methods")
     public void testGetRatesByDates()
@@ -266,6 +291,9 @@ public class ServiceUnitTest {
     
     //J-Unit Testing for to get rate by stayDateFrom
 
+    /**
+     * JUNIT testing for get rates by start dates
+     */
     @Test
     @DisplayName("getRateByDates methods")
     public void testGetRatesByStartDates()
@@ -290,6 +318,9 @@ public class ServiceUnitTest {
     
     //J-Unit Testing for to get rate by stayDateFrom
 
+    /**
+     * JUNIT testing for get rates by start dates to
+     */
     @Test
     @DisplayName("getRateByDates methods")
     public void testGetRatesByStartDatestTo()
@@ -314,6 +345,9 @@ public class ServiceUnitTest {
     
     //J-Unit Testing for to get rate by nights,value and stayDateto
     
+    /**
+     * JUNIT testing for rates by start dates to nights and value
+     */
     @Test
     @DisplayName("getRateByDates methods")
     public void testGetRatesByStartDatestToNightsValue()

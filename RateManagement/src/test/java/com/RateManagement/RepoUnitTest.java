@@ -34,6 +34,9 @@ public class RepoUnitTest
     private RateRepository rateRepository;
     
     //RateRepository Test 
+    /**
+     * JUNIT testing for repository
+     */
     @Test
     @Transactional
     void isRateExistById()

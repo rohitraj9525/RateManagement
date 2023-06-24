@@ -59,6 +59,8 @@ public class ServiceTestIntegration
 		rate.setBungalowId((long) 1);
 		rate.setClosedDate(null);
 		
+		
+		
 	}
 	
 	@AfterEach
@@ -70,7 +72,11 @@ public class ServiceTestIntegration
 	}
 	
 	
-	//create rate Junit testing
+	//create rate J unit testing
+	/**
+	 * @throws Exception
+	 * Integration testing for create rate
+	 */
 	@Test
 	public void createRate() throws Exception
 	{
@@ -93,6 +99,10 @@ public class ServiceTestIntegration
 	
 	
 	//junit testing for the method getRateById
+	/**
+	 * @throws Exception
+	 * Integration testing for get rate by id
+	 */
 	@Test
 	public void getRateById() throws Exception
 	{
@@ -117,6 +127,10 @@ public class ServiceTestIntegration
 	
 	//J-Unit testing for the delete rate by id
 	
+	/**
+	 * @throws Exception
+	 * integration testing for delete rate
+	 */
 	@Test
 	public void deleteRate() throws Exception
 	{
@@ -132,6 +146,10 @@ public class ServiceTestIntegration
 	
 	//j-Unit testing for the Update the rate by its ID
 	
+	/**
+	 * @throws Exception
+	 * integration testing for update rate
+	 */
 	@Test
 	public void updateRate() throws Exception
 	{
