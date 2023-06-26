@@ -139,6 +139,14 @@ public class RestExceptionHandler
         String errorMessage = "Invalid file format. Please upload a valid Office XML file.";
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
     }
+	
+	@ExceptionHandler(IllegalArgumentException.class)
+	public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException ex)
+	{
+		
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+		
+	}
 		
 	
 	@ControllerAdvice
@@ -147,6 +155,9 @@ public class RestExceptionHandler
 	    public ResponseEntity<String> handleException(HttpMessageNotReadableException exception, HttpServletRequest request) {
 	        return new ResponseEntity<>("You gave an incorrect value for LocalDate. please Enter Correct Input....", HttpStatus.BAD_REQUEST);
 	    }
-	}	}
+	    
+	  }
+	
+	}
 
 

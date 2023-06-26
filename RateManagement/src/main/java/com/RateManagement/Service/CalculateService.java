@@ -116,26 +116,32 @@ public class CalculateService
 			for(Rate rate : list) 
 			{
 							
-				Rate minvalue=list.get(0);
-				LocalDate nextDate = currentDate.plusDays(1);
+//				Rate minvalue=list.get(0);
+//				LocalDate nextDate = currentDate.plusDays(1);
+//				
+//				if((nextDate.isBefore(rate.getStayDateTo())||nextDate.isEqual(rate.getStayDateTo())||nextDate.equals(rate.getStayDateTo().plusDays(1)))&&(!nextDate.isAfter(bookingFilter.getEndDate())))
+//				{
+//					totalValue=totalValue+minvalue.getValue()/minvalue.getNights();
+//					System.out.println(totalValue);
+//					currentDate = nextDate;
+//					
+//					rateFound = true;
+//					break;
+//				}
+				
+				
+//								
+					LocalDate nextDate = currentDate.plusDays(rate.getNights());
 				
 				if((nextDate.isBefore(rate.getStayDateTo())||nextDate.isEqual(rate.getStayDateTo())||nextDate.equals(rate.getStayDateTo().plusDays(1)))&&(!nextDate.isAfter(bookingFilter.getEndDate())))
 				{
-					totalValue=totalValue+minvalue.getValue()/minvalue.getNights();
+					totalValue+=rate.getValue();
 					System.out.println(totalValue);
-					currentDate = nextDate;
-					
-					rateFound = true;
+					currentDate=nextDate;
+					rateFound=true;
 					break;
 				}
-				
-				
-//				for(int i=0;i<list.size();i++)
-//				{
 //					
-//					Rate minvalue = list.get(i);
-//					LocalDate nextDate = currentDate.plusDays(minvalue.getNights());
-////					
 //					if((nextDate.isBefore(rate.getStayDateTo())||nextDate.isEqual(rate.getStayDateTo())||nextDate.equals(rate.getStayDateTo().plusDays(1)))&&(!nextDate.isAfter(bookingFilter.getEndDate())))
 //					{
 //						
@@ -144,13 +150,12 @@ public class CalculateService
 //						System.out.println(totalValue);
 //						currentDate = nextDate;
 //						noOfDays=noOfDays-minvalue.getNights();
-////						
-////						totalValue=totalValue+(minvalue.getValue()/minvalue.getNights())*noOfDays;
+//						
 //						System.out.println(noOfDays);
 //						rateFound = true;
 //						break;
 //				}
-//				}
+//				
 			}
 			if(!rateFound) 
 			{

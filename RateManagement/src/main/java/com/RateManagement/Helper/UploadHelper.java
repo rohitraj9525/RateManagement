@@ -34,6 +34,11 @@ public class UploadHelper {
             
             
             Cell stayDateFromCell = row.getCell(0);
+            
+            if(stayDateFromCell == null || stayDateFromCell.getCellType()!=CellType.STRING)
+            {
+            	throw new IllegalArgumentException("Missing or Invalid Stay Date From in row " + row.getRowNum());
+            }
             LocalDate stayDateFrom = LocalDate.parse(stayDateFromCell.getStringCellValue());
             rate.setStayDateFrom(stayDateFrom);
             
@@ -41,6 +46,10 @@ public class UploadHelper {
             
             
             Cell stayDateToCell = row.getCell(1);
+            if(stayDateToCell==null||stayDateToCell.getCellType()!=CellType.STRING)
+            {
+            	throw new IllegalArgumentException("Missing or Invalid stay Date To in Row " +row.getRowNum());
+            }
             LocalDate stayDateTo = LocalDate.parse(stayDateToCell.getStringCellValue());
             rate.setStayDateTo(stayDateTo);
            
@@ -49,6 +58,10 @@ public class UploadHelper {
             
             
             Cell nightsCell = row.getCell(2);
+            if(nightsCell ==null||nightsCell.getCellType()!=CellType.NUMERIC)
+            {
+            	throw new IllegalArgumentException("Missing or Invalid nights in row "+ row.getRowNum());
+            }
             int nights = (int) nightsCell.getNumericCellValue();
             rate.setNights(nights);
             
@@ -57,6 +70,10 @@ public class UploadHelper {
             // Value (Cell 3)
             
             Cell valueCell = row.getCell(3);
+            if(valueCell==null||valueCell.getCellType()!=CellType.NUMERIC)
+            {
+            	throw new IllegalArgumentException("Missing or Invalid Value iN row "+ row.getRowNum());
+            }
             double value = valueCell.getNumericCellValue();
             rate.setValue(value);
 ;
@@ -65,6 +82,10 @@ public class UploadHelper {
             // Bungalow ID (Cell 4)
            
             Cell bungalowIdCell = row.getCell(4);
+            if(bungalowIdCell==null||bungalowIdCell.getCellType()!=CellType.NUMERIC)
+            {
+            	throw new IllegalArgumentException("Missing or Invalid bungalowID IN ROW "+row.getRowNum());
+            }
             long bungalowId = (long) bungalowIdCell.getNumericCellValue();
             rate.setBungalowId(bungalowId);
             

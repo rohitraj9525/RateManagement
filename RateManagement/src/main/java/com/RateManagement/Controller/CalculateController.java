@@ -30,6 +30,10 @@ public class CalculateController
     	{
     		return ResponseEntity.badRequest().body("Invalid stay date. 'startDate' must be before or equal to 'endDate'."); 
     	}
+		if(request.getStartDate().isEqual(request.getEndDate()))
+		{
+			return ResponseEntity.badRequest().body("Inavlid Enter Please Do not enter StartDAte and EndDAte Same");
+		}
     	if(request.getStartDate()==null||request.getEndDate()==null)
     	{
     		return ResponseEntity.badRequest().body("Inavlid Stay Dates. 'startDate and EndDate' cannot be null");

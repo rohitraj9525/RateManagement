@@ -470,6 +470,7 @@ public class RateServiceImpl implements RateService {
             	 {
             		 rateRepository.save(rate);
             	 }
+            	 //CASE:15---
             	 else if(rate.getStayDateFrom().equals(existingRate.getStayDateTo().minusDays(1)))
             	 {
             		 rateRepository.save(rate);
