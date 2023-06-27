@@ -1,5 +1,6 @@
 package com.RateManagement.Entity;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Objects;
 
@@ -23,7 +24,7 @@ import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name="rate")
-public class Rate 
+public class Rate implements Serializable
 {
 	//class fields
 	
@@ -32,7 +33,6 @@ public class Rate
 	@Column(name="rate_Id")
 	private Long rateId;
 	
-	//@NotBlank(message="Stay date form is required")
 	//@FutureOrPresent
 	@Column(name = "stay_date_from")
 	@NotNull(message = "Please enter correct stay date from ")

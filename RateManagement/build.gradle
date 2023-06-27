@@ -22,6 +22,8 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	// https://mvnrepository.com/artifact/org.apache.poi/poi
     implementation 'org.apache.poi:poi-ooxml:4.1.2'
+    
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis:3.0.2'
 	
 }
 

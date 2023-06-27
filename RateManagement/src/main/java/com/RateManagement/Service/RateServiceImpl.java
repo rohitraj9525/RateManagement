@@ -6,6 +6,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -67,6 +71,7 @@ public class RateServiceImpl implements RateService {
      * @return this method return save a rate Raw in the rate table
      */
     @Override
+    @CacheEvict(value = "rates", allEntries = true)
     public Rate createRate(Rate rate) 
  {
     	
@@ -498,7 +503,33 @@ public class RateServiceImpl implements RateService {
      *@return this return update the particular row
      */ 
     @Override
-    public Rate updateRate(Long id, Rate update) {
+    @CachePut(value="rate", key="#id")
+    @CacheEvict(value="rates", allEntries = true)
+    public Rate updateRate(Long id, Rate update) 
+    {
+    	//..............Validation start
+        System.out.println("In UpdateRate");
+    	
+    	Bungalow bungalow = bungalowService.getBungalowById(update.getBungalowId());
+    	if(bungalow==null) 
+    	{
+    		throw new BungalowNotFoundException("Bungalow with ID " + update.getBungalowId() + " not found..!");
+    	}
+    	
+    	//.........for  check the duplicate entry in the rate table...
+    	
+    	
+    	 Rate existingRates=rateRepository.findByFields(update.getStayDateFrom(), update.getStayDateTo(), update.getNights(), update.getValue(), update.getBungalowId());    
+         
+         if(existingRates!=null&&!existingRates.getRateId().equals(update.getRateId()))
+         {
+         	throw new DuplicateRateException("");
+         }
+    	
+    	//..............Validation end
+    	
+    	
+    	
         Optional<Rate> optionalRate = rateRepository.findById(id);
         if (optionalRate.isPresent()) {
             Rate existingRate = optionalRate.get();
@@ -539,7 +570,9 @@ public class RateServiceImpl implements RateService {
                     mergeUpdate(existingRate, overlappingRateMerge);
                     return update;
 
-                } 
+                }
+                
+                
                 else 
                 {
                 	
@@ -932,6 +965,7 @@ public class RateServiceImpl implements RateService {
               	 {
               		 rateRepository.save(rate);
               	 }
+              	 //else if(rate.getStayDateFrom().isEqual(existingRate.getStayDateFrom())&&rate.getNights().isEqual(existingRate.getNights()))
                }
            }        
       }   
@@ -946,6 +980,10 @@ public class RateServiceImpl implements RateService {
      *@return this method return boolean
      */
     @Override
+    @Caching(evict = {
+    		@CacheEvict(value = "rate", key="#id"),
+    		@CacheEvict(value = "rates")
+    })
     public void deleteRate(Long id) {
         rateRepository.deleteById(id);
     }
@@ -955,6 +993,7 @@ public class RateServiceImpl implements RateService {
      *@return get rate by id
      */
     @Override
+    @Cacheable(value ="rate", key="#id")
     public Rate getRateById(Long id) 
     {
         return rateRepository.findById(id)
@@ -974,6 +1013,7 @@ public class RateServiceImpl implements RateService {
      */
 
     @Override
+    @Cacheable(value ="rates")
     public Page<Rate> getAllRates(Pageable pageable, Long id, LocalDate stayDateFrom, LocalDate stayDateTo,
     Integer nights, Double value, Long bungalowId, LocalDate closedDate) 
     {

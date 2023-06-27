@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 //import java.net.http.HttpHeaders;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 
@@ -62,6 +63,10 @@ public class RateController {
 		this.excelService = null;
     }
     
+    public long calculateStayDurations(LocalDate stayDateFrom, LocalDate stayDateTo) 
+	{
+        return ChronoUnit.DAYS.between(stayDateFrom, stayDateTo);
+	}
     
 
     /**
@@ -71,6 +76,7 @@ public class RateController {
     @PostMapping
     public ResponseEntity<String> createRate(@Valid @RequestBody Rate rate) 
     {
+    	Long noOfDays = calculateStayDurations(rate.getStayDateFrom(),rate.getStayDateTo());
     	if(rate.getStayDateFrom().isAfter(rate.getStayDateTo()))
     	{
     		return ResponseEntity.badRequest().body("Invalid stay date. 'stayDateFrom' must be before or equal to 'stayDateTo'."); 
@@ -79,6 +85,11 @@ public class RateController {
     	{
     		return ResponseEntity.badRequest().body("Inavlid Stay Dates. 'stayDateTo and stayDateFrom' cannot be null");
     	}
+//    	if(noOfDays<rate.getNights())
+//    	{
+//    		return ResponseEntity.badRequest().body("Please Do not enter StayDateFrom and StayDAteTo lesser than no of nights");
+//    	}
+    	
 
         Rate createdRate = rateService.createRate(rate);
                
