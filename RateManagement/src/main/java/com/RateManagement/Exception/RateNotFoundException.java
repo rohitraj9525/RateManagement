@@ -1,5 +1,9 @@
 package com.RateManagement.Exception;
 
+/**
+ * @author R.Raj
+ *
+ */
 public class RateNotFoundException extends RuntimeException {
 
     /**

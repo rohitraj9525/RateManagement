@@ -1,5 +1,9 @@
 package com.RateManagement.Exception;
 
+/**
+ * @author R.Raj
+ *
+ */
 public class DuplicateRateException extends RuntimeException
 {
 

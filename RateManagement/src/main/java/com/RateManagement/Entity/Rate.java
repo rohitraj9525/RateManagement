@@ -22,6 +22,10 @@ import jakarta.validation.constraints.NotNull;
  */
 
 
+/**
+ * @author R.Raj
+ *
+ */
 @Entity
 @Table(name="rate")
 public class Rate implements Serializable

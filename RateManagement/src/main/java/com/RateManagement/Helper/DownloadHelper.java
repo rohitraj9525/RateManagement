@@ -13,6 +13,10 @@ import java.io.IOException;
 
 import com.RateManagement.Entity.Rate;
 
+/**
+ * @author R.Raj
+ *
+ */
 public class DownloadHelper {
     public static String Type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 
@@ -20,6 +24,10 @@ public class DownloadHelper {
 
     static String SHEET = "RatesDownload";
 
+    /**
+     * @param rates
+     * @return
+     */
     public static ByteArrayInputStream rateToExcel(List<Rate> rates) {
         try (Workbook workbook = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream();) {
             Sheet sheet = workbook.createSheet(SHEET);

@@ -14,8 +14,17 @@ import java.util.List;
 
  
 
+/**
+ * @author R.Raj
+ *
+ */
 public class UploadHelper {
 
+    /**
+     * @param inputStream
+     * @return
+     * @throws IOException
+     */
     public static List<Rate> excelToRates(InputStream inputStream) throws IOException {
         List<Rate> rates = new ArrayList<>();
 
